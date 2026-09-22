@@ -1,0 +1,130 @@
+# Local Build Engine — Roadmap (Sketchware-Pro-style, Gradle-free)
+
+## Status: Phase 1 scaffolded (this commit)
+
+`buildengine/engine/` — new module, Gradle-free at *runtime* (it's plain
+Kotlin/JVM code that itself still compiles via the IDE's own Gradle build —
+that's unrelated to what it builds for the user's Android project).
+
+Files added:
+- `model/BuildModels.kt` — BuildError (file+line for editor click-to-line),
+  BuildStage, BuildResult, BuildLogEvent, BuildConfig
+- `tools/BuildToolsLocator.kt` — resolves bundled ecj/d8/aapt2/zipalign/
+  apksigner/android.jar/kotlinc under `<filesDir>/build-tools/`
+- `tools/ProcessRunner.kt` — cancellable subprocess runner w/ line streaming
+- `classpath/ClasspathCollector.kt` — libs/*.jar + libs/*.aar → compile/dex
+  classpath (AAR exploding with content-hash cache)
+- `steps/EcjCompileStep.kt` — Java → .class, parses ECJ diagnostics
+- `steps/KotlincCompileStep.kt` — Kotlin → .class (optional component)
+- `steps/D8DexStep.kt` — .class + libs → classes.dex
+- `steps/Aapt2Step.kt` — res/ + manifest → resources.apk (also emits R.java)
+- `steps/ApkAssembleStep.kt` — merges dex+assets into the apk; ZipAlignStep;
+  ApkSignStep (apksigner, debug keystore)
+- `BuildManager.kt` — async orchestrator (coroutines/Flow), build/clean/
+  rebuild/cancel, streams `BuildLogEvent`s stage-by-stage
+
+This directly maps to requirement #3's pipeline and #7/#8 (async, cancel,
+structured errors with file/line).
+
+## Requirements still open
+
+| # | Requirement | Status |
+|---|---|---|
+| 1 | Disable old Gradle flow, keep editor/explorer intact | Not started — old flow still active, by design (nothing breaks yet) |
+| 2 | Local/offline engine, avoid Gradle daemon | Done for the engine itself |
+| 4 | `build-tools/` dir layout | Defined in `BuildToolsLocator`; actual binaries (ecj.jar, d8.jar, aapt2, zipalign, apksigner.jar, android.jar, kotlin/) still need to be sourced/bundled — see "Bundling tools" below |
+| 5 | Java + Kotlin + XML support | Java/Kotlin done; XML is handled implicitly via aapt2 (layouts/manifests) — XML *editing* already works (existing `xml:*` modules), untouched |
+| 6 | Auto-collect deps | Done for local `libs/*.jar` + `libs/*.aar`. **Not done:** transitive Maven coordinate resolution (`implementation("com.squareup:okhttp3:...")` style) — needs a minimal resolver or a "vendor your jars" convention, Phase 2 |
+| 9 | Don't break existing project format | Not yet validated — needs a real project run through the new engine |
+| 10 | Modular, UI-independent | Done — `BuildManager` has zero UI/Android dependencies |
+| 11 | Remove unused Gradle code safely | Not started — see "Removal list" below, deliberately deferred until Phase 3 is proven working, so nothing is deleted before its replacement works |
+| 12 | No forced huge SDK download | Addressed by design (core tools ~few MB, Kotlin optional) but depends on how tools are bundled |
+| 13 | Fully local, no source upload | Naturally true — no network code anywhere in this module |
+
+## Phase 2 — Local project model: IN PROGRESS
+
+Added `core/projects/.../internal/LocalWorkspaceModelBuilder.kt`. It builds
+the exact same `WorkspaceImpl`/`AndroidModule` shape as `WorkspaceModelBuilder`
+does today, but by scanning the module's `src/main/{java,kotlin,res,assets}`
++ `libs/*.jar`/`*.aar` + `AndroidManifest.xml` directly — no Gradle sync.
+
+Deliberately reuses `AndroidModule`/`GradleProject`/`tooling:builder-model-
+impl`'s `Default*` classes rather than inventing new ones — those are plain
+mutable data holders around real AGP builder-model *interfaces*, not
+Gradle-runtime-coupled, so **`tooling:builder-model-impl` should be kept**,
+not removed in Phase 4 (updating the removal list below).
+
+**Not done yet / honest limitations of this first pass:**
+- Single Android app module only (root dir or `app/` subfolder). Multi-
+  module local projects (`:app`, `:core`, ...) need a second pass that
+  walks subfolders for additional manifests.
+- No transitive Maven dependency resolution — only `libs/*.jar`/`*.aar`,
+  matching what the build engine itself supports (see Phase 1 table, req #6).
+- `ProjectSyncIssues`'s exact interface shape was written from memory —
+  I could not fetch the real `com.android.tools.build:builder-model` jar in
+  this sandbox (no Maven network access here) to confirm the method
+  signature. **This needs a real compile pass against the actual AGP
+  builder-model jar before you trust it** — flagged with a comment in the
+  file itself.
+- **Not wired in yet.** `ProjectManagerImpl.kt` (line ~100) still calls the
+  old `WorkspaceModelBuilder.build(projectDir, CachingProject(project))`.
+  Swapping the call site is deliberately left undone until you can compile
+  and test-run this locally — I don't have an Android SDK/Gradle-connected
+  environment here to verify these ~250 lines of AGP-model-shaped code
+  actually compile. Recommended next step: add a per-project toggle (e.g.
+  a `.acs-local-build` marker file in the project root) so
+  `ProjectManagerImpl` can call `LocalWorkspaceModelBuilder.build(...)`
+  for opted-in projects while everything else keeps using Gradle — safest
+  way to test this without risking every existing project.
+
+## Phase 4 — Removal list (updated)
+
+- `tooling:api`, `tooling:impl`, `tooling:model`, `tooling:events`,
+  `tooling:plugin`, `tooling:plugin-config` — remove once Phase 2/3 proven
+- **`tooling:builder-model-impl` — KEEP.** It's reused by
+  `LocalWorkspaceModelBuilder` (Phase 2); it only depends on AGP's
+  `builder-model` *interfaces*, not the Gradle runtime.
+- `composite-builds/*` (build-logic, build-deps and their Gradle plugin glue)
+- Gradle wrapper usage for *target projects* (the IDE's own build can keep
+  using Gradle — that's a separate concern from what it builds for users)
+
+Files that call into Gradle today and need a `BuildManager`-based
+replacement (found via `grep`, not yet touched):
+
+- `core/app/src/main/java/com/tom/rv2ide/services/builder/GradleBuildService.kt`
+- `core/app/src/main/java/com/tom/rv2ide/services/builder/GradleBuildServiceConnnection.kt`
+- `core/app/src/main/java/com/tom/rv2ide/services/builder/GradleServiceBinder.kt`
+- `core/app/src/main/java/com/tom/rv2ide/services/builder/ToolingServerRunner.kt`
+- `core/app/src/main/java/com/tom/rv2ide/actions/BaseBuildAction.kt`
+- `core/app/src/main/java/com/tom/rv2ide/actions/build/QuickRunWithCancellationAction.kt`
+- `core/app/src/main/java/com/tom/rv2ide/handlers/EditorBuildEventListener.kt` — this is where BuildError→editor click-to-line (requirement #8) plugs in; `BuildLogEvent.Diagnostic` already carries exactly the shape it needs
+- `core/app/src/main/java/com/tom/rv2ide/viewmodel/RunTasksViewModel.kt` + `RunTasksDialogFragment.kt` + `RunTasksListAdapter.kt` — currently list *Gradle tasks*; needs to become a fixed Build/Clean/Rebuild/Cancel action list instead (there are no arbitrary Gradle tasks anymore)
+- `core/app/src/main/java/com/tom/rv2ide/viewmodel/EditorViewModel.kt` — build-trigger entry point
+
+## Bundling the actual tool binaries — DECIDED: first-run download
+
+Added `tools/ToolsProvisioner.kt`. On first build (not on app open — so
+requirement #12 is satisfied), it downloads one small "core" zip (~5-15MB:
+ecj.jar, d8.jar, aapt2, zipalign, apksigner.jar, android.jar), verifies its
+SHA-256 against a manifest, zip-slip-guards the extraction, and unpacks it
+into `build-tools/`. Kotlin support is a second, separate, larger, optional
+package — only fetched the first time a project actually has `.kt` files.
+
+**What you still need to do (I can't do this part for you):**
+1. Build the `core` zip yourself: pull `ecj.jar` from an Eclipse JDT Core
+   release, `d8.jar`/`android.jar` from an Android SDK / R8 distribution,
+   `aapt2` + `zipalign` native binaries per-ABI (arm64-v8a at minimum) from
+   Google's Maven `com.android.tools.build:aapt2`, and `apksigner.jar` from
+   the SDK build-tools. Zip them into the `build-tools/...` layout
+   `BuildToolsLocator` expects.
+2. Host that zip somewhere stable (a GitHub Release asset on this repo is
+   the simplest option — free, versioned, no extra infra) and compute its
+   SHA-256 (`sha256sum core.zip`).
+3. Implement `ToolsProvisioner.ManifestProvider` with that URL + checksum
+   (a one-file, hardcoded implementation is fine to start — no need for a
+   remote manifest server).
+
+**Phase 3 UI hook:** call `provisioner.provision(...)` the first time the
+user taps Build, showing `ProvisionEvent.Progress` as a download progress
+bar before the pipeline's `BuildStage`s start; skip straight to building on
+every run after that since `isProvisioned()` is then true.

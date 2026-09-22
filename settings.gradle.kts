@@ -79,6 +79,8 @@ gradle.rootProject {
 rootProject.name = "AndroidCodeStudio"
 
 include(
+  ":buildengine:engine",
+
   ":annotation:annotations",
   ":annotation:processors",
   ":annotation:processors-ksp",
