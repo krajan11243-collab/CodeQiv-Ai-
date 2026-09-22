@@ -41,21 +41,52 @@ structured errors with file/line).
 | 12 | No forced huge SDK download | Addressed by design (core tools ~few MB, Kotlin optional) but depends on how tools are bundled |
 | 13 | Fully local, no source upload | Naturally true — no network code anywhere in this module |
 
-## Phase 2 — Local project model (the part most likely to surprise you)
+## Phase 2 — Local project model: IN PROGRESS
 
-`core/projects/.../internal/WorkspaceModelBuilder.kt` currently builds the
-IDE's understanding of "what are this project's modules/source-sets/
-dependencies" **from the Gradle Tooling API model** (`IGradleProject`).
-That same model feeds Java/Kotlin code completion and indexing — not just
-building. Removing Gradle means this also needs a local replacement:
-a parser that walks the project's folder layout (`src/main/java`,
-`src/main/kotlin`, `src/main/res`, `libs/*.jar`) and produces the same
-`ModuleProject`/`AndroidModule` shape the rest of the IDE already consumes.
-This is the part I'd flag as the real critical path — get it wrong and
-autocomplete/error-highlighting silently degrades even if the APK still
-builds.
+Added `core/projects/.../internal/LocalWorkspaceModelBuilder.kt`. It builds
+the exact same `WorkspaceImpl`/`AndroidModule` shape as `WorkspaceModelBuilder`
+does today, but by scanning the module's `src/main/{java,kotlin,res,assets}`
++ `libs/*.jar`/`*.aar` + `AndroidManifest.xml` directly — no Gradle sync.
 
-## Phase 3 — Wire BuildManager into the app
+Deliberately reuses `AndroidModule`/`GradleProject`/`tooling:builder-model-
+impl`'s `Default*` classes rather than inventing new ones — those are plain
+mutable data holders around real AGP builder-model *interfaces*, not
+Gradle-runtime-coupled, so **`tooling:builder-model-impl` should be kept**,
+not removed in Phase 4 (updating the removal list below).
+
+**Not done yet / honest limitations of this first pass:**
+- Single Android app module only (root dir or `app/` subfolder). Multi-
+  module local projects (`:app`, `:core`, ...) need a second pass that
+  walks subfolders for additional manifests.
+- No transitive Maven dependency resolution — only `libs/*.jar`/`*.aar`,
+  matching what the build engine itself supports (see Phase 1 table, req #6).
+- `ProjectSyncIssues`'s exact interface shape was written from memory —
+  I could not fetch the real `com.android.tools.build:builder-model` jar in
+  this sandbox (no Maven network access here) to confirm the method
+  signature. **This needs a real compile pass against the actual AGP
+  builder-model jar before you trust it** — flagged with a comment in the
+  file itself.
+- **Not wired in yet.** `ProjectManagerImpl.kt` (line ~100) still calls the
+  old `WorkspaceModelBuilder.build(projectDir, CachingProject(project))`.
+  Swapping the call site is deliberately left undone until you can compile
+  and test-run this locally — I don't have an Android SDK/Gradle-connected
+  environment here to verify these ~250 lines of AGP-model-shaped code
+  actually compile. Recommended next step: add a per-project toggle (e.g.
+  a `.acs-local-build` marker file in the project root) so
+  `ProjectManagerImpl` can call `LocalWorkspaceModelBuilder.build(...)`
+  for opted-in projects while everything else keeps using Gradle — safest
+  way to test this without risking every existing project.
+
+## Phase 4 — Removal list (updated)
+
+- `tooling:api`, `tooling:impl`, `tooling:model`, `tooling:events`,
+  `tooling:plugin`, `tooling:plugin-config` — remove once Phase 2/3 proven
+- **`tooling:builder-model-impl` — KEEP.** It's reused by
+  `LocalWorkspaceModelBuilder` (Phase 2); it only depends on AGP's
+  `builder-model` *interfaces*, not the Gradle runtime.
+- `composite-builds/*` (build-logic, build-deps and their Gradle plugin glue)
+- Gradle wrapper usage for *target projects* (the IDE's own build can keep
+  using Gradle — that's a separate concern from what it builds for users)
 
 Files that call into Gradle today and need a `BuildManager`-based
 replacement (found via `grep`, not yet touched):
@@ -69,14 +100,6 @@ replacement (found via `grep`, not yet touched):
 - `core/app/src/main/java/com/tom/rv2ide/handlers/EditorBuildEventListener.kt` — this is where BuildError→editor click-to-line (requirement #8) plugs in; `BuildLogEvent.Diagnostic` already carries exactly the shape it needs
 - `core/app/src/main/java/com/tom/rv2ide/viewmodel/RunTasksViewModel.kt` + `RunTasksDialogFragment.kt` + `RunTasksListAdapter.kt` — currently list *Gradle tasks*; needs to become a fixed Build/Clean/Rebuild/Cancel action list instead (there are no arbitrary Gradle tasks anymore)
 - `core/app/src/main/java/com/tom/rv2ide/viewmodel/EditorViewModel.kt` — build-trigger entry point
-
-## Phase 4 — Removal list (only after Phase 3 is verified working)
-
-- `tooling:api`, `tooling:impl`, `tooling:model`, `tooling:events`,
-  `tooling:plugin`, `tooling:plugin-config`, `tooling:builder-model-impl`
-- `composite-builds/*` (build-logic, build-deps and their Gradle plugin glue)
-- Gradle wrapper usage for *target projects* (the IDE's own build can keep
-  using Gradle — that's a separate concern from what it builds for users)
 
 ## Bundling the actual tool binaries — DECIDED: first-run download
 
