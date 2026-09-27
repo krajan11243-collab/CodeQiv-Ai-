@@ -120,6 +120,8 @@
     translatable="false">GitHub</string>
   <string name="need_help">Need Help?</string>
   <string name="ide_preferences">IDE preferences</string>
+  <string name="settings_title">Settings</string>
+  <string name="settings_header_description">Customize the IDE appearance, tools and workflow.</string>
   <string name="discussions_on_telegram">Discussions on Telegram</string>
   <string name="official_tg_channel">Official Telegram Channel</string>
   <string name="msg_empty_view">No data</string>
@@ -189,11 +191,20 @@
   <string name="title_confirm_project_close">Close project</string>
 
   <string name="open_project">Open Project</string>
+  <string name="projects_title">Projects</string>
+  <string name="projects_subtitle">Open, organize and back up your projects.</string>
+  <string name="projects_close">Close</string>
+  <string name="project_action_backup">Backup project</string>
+  <string name="project_action_delete">Delete project</string>
+  <string name="project_action_rename">Rename</string>
   <string name="search_projects_hint">Search projects…</string>
   <string name="no_projects_found">No projects found.\nCreate a new project or browse to open an existing one.</string>
   <string name="no_projects_match_search">No projects match your search.</string>
   <string name="browse_other_location">Browse Other Location</string>
   <string name="recent_badge">Recent</string>
+  <string name="home_recent_projects">Recent projects</string>
+  <string name="home_view_all">View all</string>
+  <string name="home_more_options">More options</string>
   
   <string name="delete_project_title">Delete Project?</string>
   <string name="delete_project_message">Are you sure you want to delete \"%1$s\"?\n\nThis will permanently delete all files in this project. This action cannot be undone.</string>
@@ -238,7 +249,14 @@
   
   <!-- ATC Options Dialog -->
   <string name="choose_template">Choose Template</string>
+  <string name="new_project_template_subtitle">Choose a template to get started.</string>
   <string name="project_configuration">Project Configuration</string>
+  <string name="project_details_subtitle">Set the name, package and build options for your new project.</string>
+  <string name="options_section_project">Project</string>
+  <string name="options_section_location">Location</string>
+  <string name="options_section_android">Android</string>
+  <string name="options_section_native">Native</string>
+  <string name="options_section_build">Build</string>
   
   <string name="project_name">Project name</string>
   <string name="project_location">Project location</string>

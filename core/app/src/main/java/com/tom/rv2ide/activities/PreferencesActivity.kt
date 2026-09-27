@@ -47,7 +47,7 @@ class PreferencesActivity : EdgeToEdgeIDEActivity() {
     super.onCreate(savedInstanceState)
 
     setSupportActionBar(binding.toolbar)
-    supportActionBar!!.setTitle(R.string.ide_preferences)
+    supportActionBar!!.setTitle(R.string.settings_title)
     supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
     binding.toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
@@ -62,6 +62,7 @@ class PreferencesActivity : EdgeToEdgeIDEActivity() {
 
     val args = Bundle()
     args.putParcelableArrayList(IDEPreferencesFragment.EXTRA_CHILDREN, ArrayList(prefs.children))
+    args.putBoolean(IDEPreferencesFragment.EXTRA_IS_ROOT, true)
 
     rootFragment.arguments = args
     loadFragment(rootFragment)

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Non-clickable description shown below the toolbar on the ROOT settings
+  screen only. The toolbar is the single title area. Nested screens unaffected. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical"
+  android:paddingHorizontal="24dp"
+  android:paddingTop="8dp"
+  android:paddingBottom="8dp">
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/settings_header_description"
+    android:textAppearance="?attr/textAppearanceBodyMedium"
+    android:textColor="?attr/colorOnSurfaceVariant" />
+
+</LinearLayout>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  Marker shown in front of the branch that is currently checked out.
+  The color is applied with backgroundTintList so that it always follows the
+  active theme.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@android:color/black" />
+</shape>

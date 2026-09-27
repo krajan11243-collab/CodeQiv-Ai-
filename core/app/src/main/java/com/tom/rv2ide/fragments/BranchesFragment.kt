@@ -24,7 +24,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.tom.rv2ide.R
 import com.tom.rv2ide.adapters.BranchesAdapter
@@ -89,16 +88,24 @@ class BranchesFragment : Fragment() {
     private fun setupObservers() {
         viewModel.branches.observe(viewLifecycleOwner) { branches ->
             adapter.submitList(branches.toList())
+            
+            binding.progressState.visibility = View.GONE
+            val isEmpty = branches.isEmpty()
+            binding.recyclerViewBranches.visibility = if (isEmpty) View.GONE else View.VISIBLE
+            binding.emptyState.visibility = if (isEmpty) View.VISIBLE else View.GONE
         }
         
         viewModel.currentBranch.observe(viewLifecycleOwner) { branch ->
             currentBranch = branch
-            binding.textCurrentBranch.text = "Current: $branch"
+            binding.textCurrentBranch.text = "Current branch: $branch"
             adapter.notifyDataSetChanged()
         }
         
         viewModel.operationResult.observe(viewLifecycleOwner) { result ->
-            Snackbar.make(binding.root, result.message, Snackbar.LENGTH_SHORT).show()
+            binding.root.showGitFeedback(
+                result.message,
+                if (result.success) GitFeedbackStyle.SUCCESS else GitFeedbackStyle.ERROR
+            )
             if (result.success) {
                 viewModel.refreshBranches()
             }
@@ -127,7 +134,7 @@ class BranchesFragment : Fragment() {
                 if (branchName.isNotBlank()) {
                     viewModel.createBranch(branchName)
                 } else {
-                    Snackbar.make(binding.root, "Branch name cannot be empty", Snackbar.LENGTH_SHORT).show()
+                    binding.root.showGitFeedback("Branch name cannot be empty", GitFeedbackStyle.ERROR)
                 }
             }
             .setNegativeButton("Cancel", null)
@@ -136,7 +143,7 @@ class BranchesFragment : Fragment() {
     
     private fun showDeleteConfirmation(branch: String) {
         if (branch == currentBranch) {
-            Snackbar.make(binding.root, "Cannot delete current branch", Snackbar.LENGTH_SHORT).show()
+            binding.root.showGitFeedback("Cannot delete current branch", GitFeedbackStyle.ERROR)
             return
         }
         
@@ -148,6 +155,7 @@ class BranchesFragment : Fragment() {
             }
             .setNegativeButton("Cancel", null)
             .show()
+            .styleAsDestructive()
     }
     
     override fun onDestroyView() {

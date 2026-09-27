@@ -1,59 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:id="@+id/coordinator"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:clipToPadding="false"
+  android:fillViewport="true"
   app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-
-  <com.google.android.material.imageview.ShapeableImageView
-    android:id="@+id/main_image"
-    android:layout_width="80dp"
-    android:layout_height="80dp"
-    android:layout_marginTop="10dp"
-    android:src="@drawable/ic_acs"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:shapeAppearance="@style/AppTheme.ShapeAppearance.MainFragment.Logo" />
-
-  <TextView
-    android:id="@+id/getStarted"
-    android:layout_width="wrap_content"
+  <LinearLayout
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="@string/get_started"
-    android:layout_marginTop="10dp"
-    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-    android:textStyle="bold"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/main_image" />
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="24dp">
 
-  <TextView
-    android:id="@+id/greetingText"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="4dp"
-    android:text="@string/msg_create_new_project_greeting"
-    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/getStarted" />
+    <!-- Header: logo + titles (IDs kept for MainFragment compat) -->
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center_vertical"
+      android:orientation="horizontal">
 
-  <androidx.recyclerview.widget.RecyclerView
-    android:id="@+id/actions"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:layout_marginTop="16dp"
-    android:layout_marginBottom="16dp"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="@id/greetingText"
-    app:layout_constraintStart_toStartOf="@id/greetingText"
-    app:layout_constraintTop_toBottomOf="@id/greetingText"
-    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-    tools:listitem="@layout/layout_main_action_item" />
-    
-</androidx.constraintlayout.widget.ConstraintLayout>
+      <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/main_image"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_acs"
+        app:shapeAppearance="@style/AppTheme.ShapeAppearance.MainFragment.Logo" />
+
+      <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+          android:id="@+id/getStarted"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/get_started"
+          android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+          android:textStyle="bold" />
+
+        <TextView
+          android:id="@+id/greetingText"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/msg_create_new_project_greeting"
+          android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+          android:textColor="?attr/colorOnSurfaceVariant" />
+
+      </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Primary call to action -->
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/actionCreateProject"
+      style="@style/Widget.Material3.Button"
+      android:layout_width="match_parent"
+      android:layout_height="56dp"
+      android:layout_marginTop="16dp"
+      android:text="@string/new_project"
+      app:cornerRadius="16dp"
+      app:icon="@drawable/ic_add"
+      app:iconGravity="textStart"
+      app:iconPadding="12dp" />
+
+    <!-- Primary actions grid: Open + Clone side by side, Terminal full width.
+      LayoutManager is set in code (GridLayoutManager with span lookup). -->
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/actions"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:nestedScrollingEnabled="false"
+      tools:listitem="@layout/layout_main_action_grid_item" />
+
+    <!-- Recent projects (hidden when empty) -->
+    <LinearLayout
+      android:id="@+id/recentSection"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="12dp"
+      android:orientation="vertical"
+      android:visibility="gone"
+      tools:visibility="visible">
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:text="@string/home_recent_projects"
+          android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+          android:textColor="?attr/colorOnSurfaceVariant" />
+
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/btnViewAllProjects"
+          style="@style/Widget.Material3.Button.TextButton"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:minHeight="48dp"
+          android:text="@string/home_view_all" />
+
+      </LinearLayout>
+
+      <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recentList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_project" />
+
+    </LinearLayout>
+
+    <!-- Secondary actions: Preferences / IDE config / Docs -->
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="12dp"
+      android:text="@string/home_more_options"
+      android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+      android:textColor="?attr/colorOnSurfaceVariant" />
+
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/moreActions"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:nestedScrollingEnabled="false"
+      app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+      tools:listitem="@layout/layout_main_action_item" />
+
+  </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

@@ -34,22 +34,17 @@
             android:visibility="gone"
             />
         
-        <!-- ScrollView for vertical scrolling -->
-        <ScrollView
+        <!-- Fragment container: pinned to the available height instead of living
+             inside a scroll container. Panels (e.g. the Git client) keep their
+             header, path and controls fixed; screens that need to scroll do it
+             internally with their own list or scroll view. -->
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragmentContainer"
+            android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:fillViewport="true">
-
-            <!-- Fragment Container inside ScrollView -->
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/fragmentContainer"
-                android:name="androidx.navigation.fragment.NavHostFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:defaultNavHost="false" />
-
-        </ScrollView>
+            app:defaultNavHost="false" />
 
     </LinearLayout>
 

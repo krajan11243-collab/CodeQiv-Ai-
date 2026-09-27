@@ -24,10 +24,17 @@
         <TextView
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:text="@string/choose_template"
-          android:textAppearance="?attr/textAppearanceHeadlineSmall"
+          android:text="@string/new_project"
+          android:textAppearance="?attr/textAppearanceHeadlineSmall" />
+
+        <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="4dp"
           android:layout_marginBottom="16dp"
-          android:gravity="center" />
+          android:text="@string/new_project_template_subtitle"
+          android:textAppearance="?attr/textAppearanceBodyMedium"
+          android:textColor="?attr/colorOnSurfaceVariant" />
 
         <androidx.recyclerview.widget.RecyclerView
           android:id="@+id/templatesGrid"
@@ -48,17 +55,33 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:text="@string/project_configuration"
-          android:textAppearance="?attr/textAppearanceHeadlineSmall"
-          android:layout_marginBottom="16dp"
-          android:gravity="center" />
+          android:textAppearance="?attr/textAppearanceHeadlineSmall" />
+
+        <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="4dp"
+          android:layout_marginBottom="8dp"
+          android:text="@string/project_details_subtitle"
+          android:textAppearance="?attr/textAppearanceBodyMedium"
+          android:textColor="?attr/colorOnSurfaceVariant" />
+
+        <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="8dp"
+          android:text="@string/options_section_project"
+          android:textAppearance="?attr/textAppearanceTitleSmall"
+          android:textColor="?attr/colorOnSurfaceVariant" />
 
         <com.google.android.material.textfield.TextInputLayout
           android:id="@+id/projectNameLayout"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="8dp"
-          android:layout_marginBottom="8dp"
-          android:hint="@string/project_name">
+          android:layout_marginTop="4dp"
+          android:layout_marginBottom="4dp"
+          android:hint="@string/project_name"
+          style="@style/Widget.Material3.TextInputLayout.FilledBox">
 
           <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/projectNameInput"
@@ -70,9 +93,10 @@
         <com.google.android.material.textfield.TextInputLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="8dp"
-          android:layout_marginBottom="8dp"
-          android:hint="@string/package_name">
+          android:layout_marginTop="4dp"
+          android:layout_marginBottom="4dp"
+          android:hint="@string/package_name"
+          style="@style/Widget.Material3.TextInputLayout.FilledBox">
 
           <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/packageNameInput"
@@ -81,13 +105,22 @@
             android:text="@string/default_package_name" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="12dp"
+          android:text="@string/options_section_location"
+          android:textAppearance="?attr/textAppearanceTitleSmall"
+          android:textColor="?attr/colorOnSurfaceVariant" />
+
         <com.google.android.material.textfield.TextInputLayout
           android:id="@+id/saveLocationLayout"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="8dp"
-          android:layout_marginBottom="8dp"
+          android:layout_marginTop="4dp"
+          android:layout_marginBottom="4dp"
           android:hint="@string/project_location"
+          style="@style/Widget.Material3.TextInputLayout.FilledBox"
           app:endIconMode="custom"
           app:endIconDrawable="@drawable/ic_folder"
           app:endIconContentDescription="@string/browse">
@@ -98,11 +131,19 @@
             android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="12dp"
+          android:text="@string/options_section_android"
+          android:textAppearance="?attr/textAppearanceTitleSmall"
+          android:textColor="?attr/colorOnSurfaceVariant" />
+
         <com.google.android.material.textfield.TextInputLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="8dp"
-          android:layout_marginBottom="8dp"
+          android:layout_marginTop="4dp"
+          android:layout_marginBottom="4dp"
           android:hint="@string/language"
           style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu">
 
@@ -117,8 +158,8 @@
         <com.google.android.material.textfield.TextInputLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="8dp"
-          android:layout_marginBottom="8dp"
+          android:layout_marginTop="4dp"
+          android:layout_marginBottom="4dp"
           android:hint="@string/minimum_sdk"
           style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu">
 
@@ -130,61 +171,86 @@
             android:focusable="false" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-          android:id="@+id/nativeLanguageInputLayout"
+        <!-- Native options: shown only for templates that require them -->
+        <LinearLayout
+          android:id="@+id/nativeSection"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:visibility="gone"
-          android:layout_marginTop="8dp"
-          android:layout_marginBottom="8dp"
-          android:hint="@string/native_language"
-          style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu">
+          android:orientation="vertical"
+          android:visibility="gone">
 
-          <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/nativeLanguageInput"
+          <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="none"
-            android:focusable="false" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginTop="12dp"
+            android:text="@string/options_section_native"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:textColor="?attr/colorOnSurfaceVariant" />
 
-        <com.google.android.material.button.MaterialButton
-          android:id="@+id/ndkVersionButton"
+          <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/nativeLanguageInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:hint="@string/native_language"
+            style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+              android:id="@+id/nativeLanguageInput"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:inputType="none"
+              android:focusable="false" />
+          </com.google.android.material.textfield.TextInputLayout>
+
+          <com.google.android.material.button.MaterialButton
+            android:id="@+id/ndkVersionButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:visibility="gone"
+            android:text="@string/ndk_version_auto"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            app:icon="@drawable/ic_settings"
+            app:iconGravity="start" />
+
+          <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/useCMakeSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:visibility="gone"
+            android:checked="true"
+            android:text="@string/use_cmake" />
+        </LinearLayout>
+
+        <TextView
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="8dp"
-          android:layout_marginBottom="8dp"
-          android:visibility="gone"
-          android:text="@string/ndk_version_auto"
-          style="@style/Widget.Material3.Button.OutlinedButton"
-          app:icon="@drawable/ic_settings"
-          app:iconGravity="start" />
+          android:layout_marginTop="12dp"
+          android:text="@string/options_section_build"
+          android:textAppearance="?attr/textAppearanceTitleSmall"
+          android:textColor="?attr/colorOnSurfaceVariant" />
 
         <com.google.android.material.materialswitch.MaterialSwitch
           android:id="@+id/useKtsSwitch"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="8dp"
-          android:layout_marginBottom="8dp"
+          android:layout_marginTop="4dp"
+          android:layout_marginBottom="4dp"
           android:checked="false"
           android:text="@string/use_gradle_kotlin_dsl" />
-          
-        <com.google.android.material.materialswitch.MaterialSwitch
-          android:id="@+id/useCMakeSwitch"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="8dp"
-          android:visibility="gone"
-          android:layout_marginBottom="8dp"
-          android:checked="true"
-          android:text="@string/use_cmake" />
 
         <!-- Actions inside options page for better scrolling -->
         <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="24dp"
-          android:layout_marginBottom="12dp"
+          android:layout_marginTop="16dp"
+          android:layout_marginBottom="4dp"
           android:gravity="end"
           android:orientation="horizontal">
 
@@ -192,6 +258,7 @@
             android:id="@+id/backButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minHeight="48dp"
             android:text="@string/back"
             android:visibility="gone"
             style="@style/Widget.Material3.Button.TextButton" />
@@ -204,6 +271,7 @@
             android:id="@+id/createButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minHeight="48dp"
             android:text="@string/create"
             android:visibility="gone" />
         </LinearLayout>

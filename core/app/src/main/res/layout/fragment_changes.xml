@@ -10,53 +10,73 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         
-        <com.google.android.material.card.MaterialCardView
+        <!-- Screen header: plain block (not a card) so the narrow Git panel keeps
+             its horizontal space for the change list. -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:cardElevation="0dp"
-            app:cardCornerRadius="12dp">
-            
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="14dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="0dp">
-                
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp">
-                
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonStageAll"
-                    android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/textScreenTitle"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    android:text="Stage All"
-                    app:icon="@drawable/ic_add"
-                    style="@style/Widget.Material3.Button.TonalButton"/>
-                
+                    android:layout_weight="1"
+                    android:text="Changes"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="?android:textColorPrimary"/>
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonRefresh"
-                    android:layout_width="match_parent"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    android:text="Refresh"
+                    android:minWidth="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:paddingHorizontal="10dp"
+                    android:contentDescription="Refresh"
                     app:icon="@drawable/ic_sync"
-                    style="@style/Widget.Material3.Button.OutlinedButton"/>
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/fabCommit"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Commit"
-                    android:elevation="0dp"
-                    android:visibility="gone"
-                    app:icon="@drawable/ic_save"/>
+                    app:iconSize="20dp"
+                    app:iconPadding="0dp"
+                    app:iconTint="?android:textColorSecondary"/>
             </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/textScreenSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:textSize="14sp"
+                android:textColor="?android:textColorSecondary"
+                android:visibility="gone"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonStageAll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Stage All"
+                app:icon="@drawable/ic_add"
+                style="@style/Widget.Material3.Button.TonalButton"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:background="?attr/colorOutlineVariant"/>
+        </LinearLayout>
         
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewChanges"
@@ -64,18 +84,54 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:paddingHorizontal="16dp"
+            android:paddingBottom="80dp"
             android:clipToPadding="false"/>
         
-        <TextView
-            android:id="@+id/emptyStateText"
+        <LinearLayout
+            android:id="@+id/emptyState"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="No changes detected"
+            android:orientation="vertical"
             android:gravity="center"
-            android:textSize="16sp"
-            android:textColor="?android:textColorSecondary"
-            android:visibility="gone"/>
+            android:padding="32dp"
+            android:visibility="gone">
+            
+            <TextView
+                android:id="@+id/emptyStateText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No changes"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="?android:textColorPrimary"
+                android:gravity="center"/>
+            
+            <TextView
+                android:id="@+id/emptyStateSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="The working tree matches the last commit"
+                android:textSize="14sp"
+                android:textColor="?android:textColorSecondary"
+                android:gravity="center"/>
+        </LinearLayout>
     </LinearLayout>
-
+    
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabCommit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:text="Commit"
+        android:visibility="gone"
+        app:icon="@drawable/ic_save"/>
+    
+    <ProgressBar
+        android:id="@+id/progressState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -44,17 +44,25 @@
   
     </RelativeLayout>  
   
-    <HorizontalScrollView  
-        android:id="@+id/horizontal_croll"  
-        android:layout_width="match_parent"  
-        android:layout_height="match_parent"  
-        android:layout_below="@id/header"  
-        android:fillViewport="true" />  
-  
-    <ProgressBar  
-        android:id="@+id/loading"  
-        android:layout_width="wrap_content"  
-        android:layout_height="wrap_content"  
+    <!-- Vertical scrolling for the file tree: the sidebar panel container is no
+         longer a scroll container, so the tree scrolls here on its own. -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/header">
+
+        <HorizontalScrollView
+            android:id="@+id/horizontal_croll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true" />
+
+    </androidx.core.widget.NestedScrollView>
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true" />  
   
 </RelativeLayout>

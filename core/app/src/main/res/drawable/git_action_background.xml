@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  Tonal tile used by the Remotes header actions (Push / Pull / Fetch).
+
+  The three actions sit in one row of equal-width cells so that they always
+  share the same width, height, corner radius and padding - even when the Git
+  panel is only half of the screen wide.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="?attr/colorSecondaryContainer" />
+    <corners android:radius="14dp" />
+</shape>

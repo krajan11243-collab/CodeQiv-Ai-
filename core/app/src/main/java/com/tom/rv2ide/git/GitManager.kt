@@ -297,16 +297,39 @@ class GitManager(private val projectPath: String) {
         }
     }
     
+    /**
+     * Lists every branch the repository knows about: local branches
+     * (refs/heads/...) and remote-tracking branches (refs/remotes/...).
+     *
+     * A clone only creates a local branch for the remote's default branch, so
+     * listing local branches alone makes a freshly cloned repository look like
+     * it has exactly one branch. Remote branches are deduplicated against
+     * local ones and the symbolic remote HEAD ref is skipped.
+     */
     fun getAllBranches(): List<String> {
-        val branches = mutableListOf<String>()
+        val branches = linkedSetOf<String>()
         try {
-            git?.branchList()?.call()?.forEach { ref ->
-                branches.add(ref.name.removePrefix("refs/heads/"))
-            }
+            git?.branchList()
+                ?.setListMode(org.eclipse.jgit.api.ListBranchCommand.ListMode.ALL)
+                ?.call()
+                ?.forEach { ref ->
+                    val name = ref.name
+                    when {
+                        name.startsWith(Constants.R_HEADS) ->
+                            branches.add(name.removePrefix(Constants.R_HEADS))
+                        name.startsWith(Constants.R_REMOTES) -> {
+                            val remoteBranch = name.removePrefix(Constants.R_REMOTES)
+                            val branchName = remoteBranch.substringAfter('/', "")
+                            if (branchName.isNotEmpty() && branchName != "HEAD") {
+                                branches.add(branchName)
+                            }
+                        }
+                    }
+                }
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return branches
+        return branches.sorted()
     }
     
     fun createBranch(branchName: String): Boolean {
@@ -321,11 +344,60 @@ class GitManager(private val projectPath: String) {
     
     fun checkoutBranch(branchName: String): Boolean {
         return try {
-            git?.checkout()?.setName(branchName)?.call()
+            val repo = repository
+            val localRef = repo?.exactRef(Constants.R_HEADS + branchName)
+            if (localRef != null) {
+                git?.checkout()?.setName(branchName)?.call()
+            } else {
+                val remoteRef = findRemoteTrackingRef(branchName)
+                if (remoteRef != null) {
+                    // Remote-only branch: create the local tracking branch from
+                    // its remote-tracking ref first (like `git checkout <branch>`
+                    // does), then switch to it.
+                    git?.checkout()
+                        ?.setName(branchName)
+                        ?.setCreateBranch(true)
+                        ?.setStartPoint(remoteRef)
+                        ?.setUpstreamMode(
+                            org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode.SET_UPSTREAM
+                        )
+                        ?.call()
+                } else {
+                    git?.checkout()?.setName(branchName)?.call()
+                }
+            }
             true
         } catch (e: Exception) {
             e.printStackTrace()
             false
+        }
+    }
+
+    /**
+     * Finds the remote-tracking ref (e.g. refs/remotes/origin/feature) matching
+     * [branchName]. The remote named 'origin' is preferred, remaining remotes
+     * are considered in alphabetical order.
+     */
+    private fun findRemoteTrackingRef(branchName: String): String? {
+        val repo = repository ?: return null
+        return try {
+            repo.refDatabase.getRefsByPrefix(Constants.R_REMOTES)
+                .map { it.name }
+                .filter { name ->
+                    val remoteBranch = name.removePrefix(Constants.R_REMOTES)
+                    val branch = remoteBranch.substringAfter('/', "")
+                    branch.isNotEmpty() && branch != "HEAD" && branch == branchName
+                }
+                .sortedWith(
+                    compareBy(
+                        { it.removePrefix(Constants.R_REMOTES).substringBefore('/') != "origin" },
+                        { it }
+                    )
+                )
+                .firstOrNull()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
     

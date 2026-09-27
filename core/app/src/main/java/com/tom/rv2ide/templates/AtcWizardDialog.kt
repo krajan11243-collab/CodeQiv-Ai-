@@ -150,7 +150,10 @@ class AtcWizardDialog : BottomSheetDialogFragment() {
 
   private fun setupTemplatesGrid(ctx: Context) {
     val templates = TemplateRegistry.getAllTemplates()
-    binding.templatesGrid.layoutManager = GridLayoutManager(ctx, 2)
+    // Adaptive columns: 2 on phones, more on wider screens (landscape/tablet).
+    val screenWidthDp = ctx.resources.displayMetrics.widthPixels / ctx.resources.displayMetrics.density
+    val spanCount = (screenWidthDp / 180).toInt().coerceAtLeast(2)
+    binding.templatesGrid.layoutManager = GridLayoutManager(ctx, spanCount)
     binding.templatesGrid.adapter =
         TemplateAdapter(ctx, templates) { template ->
           selectedTemplate = template
@@ -241,6 +244,7 @@ class AtcWizardDialog : BottomSheetDialogFragment() {
       binding.packageNameInput.setText("com.example.$packageSuffix")
 
       val isNative = Options.OPT_IS_NATIVE_CPP
+      binding.nativeSection.visibility = if (isNative) View.VISIBLE else View.GONE
       binding.useCMakeSwitch.visibility = if (isNative) View.VISIBLE else View.GONE
       binding.nativeLanguageInputLayout.visibility = if (isNative) View.VISIBLE else View.GONE
       binding.ndkVersionButton.visibility = if (isNative) View.VISIBLE else View.GONE
@@ -461,10 +465,6 @@ class TemplateAdapter(
 ) : RecyclerView.Adapter<TemplateVH>() {
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TemplateVH {
-    val displayMetrics = ctx.resources.displayMetrics
-    val screenWidthDp = displayMetrics.widthPixels / displayMetrics.density
-    android.util.Log.d("TemplateAdapter", "Screen Width DP: $screenWidthDp")
-    
     val card =
         MaterialCardView(ctx).apply {
           layoutParams =
@@ -472,35 +472,46 @@ class TemplateAdapter(
                       ViewGroup.LayoutParams.MATCH_PARENT,
                       ViewGroup.LayoutParams.WRAP_CONTENT,
                   )
-                  .apply { setMargins(8.dp, 8.dp, 8.dp, 8.dp) }
+                  .apply { setMargins(6.dp, 6.dp, 6.dp, 6.dp) }
           radius = 20.dp.toFloat()
           isClickable = true
           isFocusable = true
-          strokeWidth = 0
-          elevation = 1.dp.toFloat()
+          strokeWidth = 1.dp
+          strokeColor =
+              com.google.android.material.color.MaterialColors.getColor(
+                  this,
+                  com.google.android.material.R.attr.colorOutlineVariant,
+              )
+          elevation = 0f
+
+          val surfaceContainerHigh =
+              com.google.android.material.color.MaterialColors.getColor(
+                  this,
+                  com.google.android.material.R.attr.colorSurfaceContainerHigh,
+              )
+          setCardBackgroundColor(surfaceContainerHigh)
+
+          val outValue = android.util.TypedValue()
+          context.theme.resolveAttribute(android.R.attr.selectableItemBackground, outValue, true)
+          foreground = context.getDrawable(outValue.resourceId)
         }
 
     val layout = LinearLayout(ctx).apply { orientation = LinearLayout.VERTICAL }
     val title =
         TextView(ctx).apply {
           textSize = 14f
+          typeface = android.graphics.Typeface.DEFAULT_BOLD
           setPadding(12.dp, 12.dp, 12.dp, 8.dp)
           gravity = android.view.Gravity.CENTER
+          maxLines = 2
+          ellipsize = android.text.TextUtils.TruncateAt.END
         }
-    
+
     val image =
         ImageView(ctx).apply {
           scaleType = ImageView.ScaleType.CENTER_CROP
-          
-          if (screenWidthDp >= 600) {
-            android.util.Log.d("TemplateAdapter", "Using small size for large screen")
-            layoutParams = LinearLayout.LayoutParams(100.dp, 100.dp).apply {
-              gravity = android.view.Gravity.CENTER
-            }
-          } else {
-            android.util.Log.d("TemplateAdapter", "Using normal size")
-            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 160.dp)
-          }
+          // Fixed preview height keeps every card consistent in any column count.
+          layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 120.dp)
         }
 
     layout.addView(title)
@@ -512,6 +523,7 @@ class TemplateAdapter(
   override fun onBindViewHolder(holder: TemplateVH, position: Int) {
     val template = templates[position]
     holder.title.text = template.displayName
+    holder.card.contentDescription = template.displayName
 
     val resId =
         ctx.resources.getIdentifier(

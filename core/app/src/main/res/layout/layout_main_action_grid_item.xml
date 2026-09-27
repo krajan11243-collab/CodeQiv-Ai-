@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Primary Home action tile: icon above label. Used in the 2-column grid
+  (Open / Clone) and full-width for Terminal. Shares the actionButton ID
+  with layout_main_action_item so MainActionsListAdapter binds both. -->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="?attr/colorSurfaceContainerHigh">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/actionButton"
+        style="@style/Widget.Material3.Button.TextButton.Icon"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:elevation="0dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="2"
+        android:singleLine="false"
+        android:stateListAnimator="@null"
+        android:textAlignment="center"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="13sp"
+        app:cornerRadius="20dp"
+        app:iconGravity="textTop"
+        app:iconPadding="8dp"
+        app:iconSize="28dp"
+        app:iconTint="?attr/colorPrimary"
+        app:rippleColor="?attr/colorPrimaryContainer"
+        tools:icon="@drawable/ic_folder"
+        tools:text="@string/msg_open_existing_project" />
+
+</com.google.android.material.card.MaterialCardView>

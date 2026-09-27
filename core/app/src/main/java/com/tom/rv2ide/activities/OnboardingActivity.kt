@@ -32,7 +32,6 @@ import com.tom.rv2ide.R
 import com.tom.rv2ide.R.string
 import com.tom.rv2ide.app.configuration.IDEBuildConfigProvider
 import com.tom.rv2ide.app.configuration.IJdkDistributionProvider
-import com.tom.rv2ide.fragments.onboarding.GreetingFragment
 import com.tom.rv2ide.fragments.onboarding.IdeSetupConfigurationFragment
 import com.tom.rv2ide.fragments.onboarding.OnboardingInfoFragment
 import com.tom.rv2ide.fragments.onboarding.PermissionsFragment
@@ -85,8 +84,6 @@ class OnboardingActivity : AppIntro2() {
     showStatusBar(true)
     isIndicatorEnabled = true
     isWizardMode = true
-
-    addSlide(GreetingFragment())
 
     if (!PackageUtils.isCurrentUserThePrimaryUser(this)) {
       val errorMessage =

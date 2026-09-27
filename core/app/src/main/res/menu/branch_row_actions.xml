@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  Actions of a single branch row.
+
+  They are presented in an overflow menu instead of inline buttons because the
+  Git panel gives the list roughly 250dp: two text buttons side by side would
+  leave far too little room for the branch name itself.
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_checkout"
+        android:title="Checkout"/>
+    <item
+        android:id="@+id/action_delete"
+        android:title="Delete"/>
+</menu>

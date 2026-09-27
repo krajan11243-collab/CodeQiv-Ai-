@@ -18,24 +18,35 @@
 package com.tom.rv2ide.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
-import com.tom.rv2ide.databinding.LayoutMainActionItemBinding
+import com.google.android.material.button.MaterialButton
+import com.tom.rv2ide.R
 import com.tom.rv2ide.models.MainScreenAction
 
 /**
  * Adapter for the actions available on the main screen.
  *
+ * @param itemLayoutRes item layout to inflate. Any layout with a
+ *   [MaterialButton] with ID `R.id.actionButton` works (row or grid tile).
+ *
  * @author Akash Yadav
  */
 class MainActionsListAdapter
 @JvmOverloads
-constructor(val actions: List<MainScreenAction> = emptyList()) :
-    RecyclerView.Adapter<MainActionsListAdapter.VH>() {
-  class VH(val binding: LayoutMainActionItemBinding) : RecyclerView.ViewHolder(binding.root)
+constructor(
+    val actions: List<MainScreenAction> = emptyList(),
+    @LayoutRes private val itemLayoutRes: Int = R.layout.layout_main_action_item,
+) : RecyclerView.Adapter<MainActionsListAdapter.VH>() {
+  class VH(val root: View, val actionButton: MaterialButton) :
+      RecyclerView.ViewHolder(root)
 
-  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-      VH(LayoutMainActionItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+    val view = LayoutInflater.from(parent.context).inflate(itemLayoutRes, parent, false)
+    return VH(view, view.findViewById(R.id.actionButton))
+  }
 
   override fun getItemCount(): Int = actions.size
 
@@ -43,9 +54,8 @@ constructor(val actions: List<MainScreenAction> = emptyList()) :
 
   override fun onBindViewHolder(holder: VH, position: Int) {
     val action = getAction(index = position)
-    val binding = holder.binding
 
-    binding.actionButton.apply {
+    holder.actionButton.apply {
       setText(action.text)
       setIconResource(action.icon)
       setOnClickListener { action.onClick?.invoke(action, it) }

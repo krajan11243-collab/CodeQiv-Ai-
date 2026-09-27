@@ -24,7 +24,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.tom.rv2ide.R
 import com.tom.rv2ide.adapters.RemotesAdapter
@@ -83,24 +82,26 @@ class RemotesFragment : Fragment() {
     private fun setupObservers() {
         viewModel.remotes.observe(viewLifecycleOwner) { remotes ->
             adapter.submitList(remotes)
-            binding.emptyStateText.visibility = if (remotes.isEmpty()) View.VISIBLE else View.GONE
-            binding.recyclerViewRemotes.visibility = if (remotes.isEmpty()) View.GONE else View.VISIBLE
+            
+            binding.progressState.visibility = View.GONE
+            val isEmpty = remotes.isEmpty()
+            binding.recyclerViewRemotes.visibility = if (isEmpty) View.GONE else View.VISIBLE
+            binding.emptyState.visibility = if (isEmpty) View.VISIBLE else View.GONE
+            
+            // Push/pull/fetch always act on the first configured remote - make
+            // that target explicit instead of leaving it to be guessed.
+            binding.textScreenSubtitle.text = remotes.firstOrNull()?.let { remote ->
+                "Push, pull and fetch use \"${remote.name}\""
+            } ?: ""
+            binding.textScreenSubtitle.visibility = if (isEmpty) View.GONE else View.VISIBLE
         }
         
         viewModel.operationResult.observe(viewLifecycleOwner) { result ->
-            if (!result.success) {
-                showErrorDialog("Operation Failed", result.message)
-            } else {
-                Snackbar.make(binding.root, result.message, Snackbar.LENGTH_SHORT).show()
-            }
+            showResult(result.success, result.message)
         }
         
         viewModel.pushPullResult.observe(viewLifecycleOwner) { result ->
-            if (!result.success) {
-                showErrorDialog("${result.operation.capitalize()} Failed", result.message)
-            } else {
-                Snackbar.make(binding.root, result.message, Snackbar.LENGTH_LONG).show()
-            }
+            showResult(result.success, result.message)
         }
         
         viewModel.progressMessage.observe(viewLifecycleOwner) { message ->
@@ -110,6 +111,13 @@ class RemotesFragment : Fragment() {
                 progressDialog.dismiss()
             }
         }
+    }
+    
+    private fun showResult(success: Boolean, message: String) {
+        binding.root.showGitFeedback(
+            message,
+            if (success) GitFeedbackStyle.SUCCESS else GitFeedbackStyle.ERROR
+        )
     }
 
     private fun setupButtons() {
@@ -134,14 +142,6 @@ class RemotesFragment : Fragment() {
         }
     }
     
-    private fun showErrorDialog(title: String, message: String) {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(title)
-            .setMessage(message)
-            .setPositiveButton("OK", null)
-            .show()
-    }
-    
     private fun showAddRemoteDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_remote, null)
         val editTextName = dialogView.findViewById<TextInputEditText>(R.id.editTextRemoteName)
@@ -161,7 +161,7 @@ class RemotesFragment : Fragment() {
                 if (name.isNotBlank() && url.isNotBlank()) {
                     viewModel.addRemote(name, url)
                 } else {
-                    showErrorDialog("Invalid Input", "Name and URL cannot be empty")
+                    binding.root.showGitFeedback("Name and URL cannot be empty", GitFeedbackStyle.ERROR)
                 }
             }
             .setNegativeButton("Cancel", null)
@@ -171,7 +171,7 @@ class RemotesFragment : Fragment() {
     private fun showPushDialog() {
         val remotesList = adapter.currentList
         if (remotesList.isEmpty()) {
-            showErrorDialog("No Remotes", "No remotes configured. Add a remote first.")
+            binding.root.showGitFeedback("No remotes configured. Add a remote first.", GitFeedbackStyle.ERROR)
             return
         }
         
@@ -212,7 +212,7 @@ class RemotesFragment : Fragment() {
     private fun showPullDialog() {
         val remotesList = adapter.currentList
         if (remotesList.isEmpty()) {
-            showErrorDialog("No Remotes", "No remotes configured. Add a remote first.")
+            binding.root.showGitFeedback("No remotes configured. Add a remote first.", GitFeedbackStyle.ERROR)
             return
         }
         
@@ -252,7 +252,7 @@ class RemotesFragment : Fragment() {
     private fun showFetchDialog() {
         val remotesList = adapter.currentList
         if (remotesList.isEmpty()) {
-            showErrorDialog("No Remotes", "No remotes configured. Add a remote first.")
+            binding.root.showGitFeedback("No remotes configured. Add a remote first.", GitFeedbackStyle.ERROR)
             return
         }
         
@@ -299,6 +299,7 @@ class RemotesFragment : Fragment() {
             }
             .setNegativeButton("Cancel", null)
             .show()
+            .styleAsDestructive()
     }
     
     override fun onDestroyView() {

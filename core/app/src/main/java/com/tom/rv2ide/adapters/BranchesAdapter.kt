@@ -16,15 +16,19 @@
 */
 package com.tom.rv2ide.adapters
 
+import android.content.res.ColorStateList
+import android.graphics.Typeface
+import android.util.TypedValue
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.tom.rv2ide.R
 import com.tom.rv2ide.databinding.ItemBranchBinding
-import android.util.TypedValue
 
 /**
  * @author Mohammed-baqer-null @ https://github.com/Mohammed-baqer-null
@@ -55,33 +59,58 @@ class BranchesAdapter(
         
         fun bind(branch: String) {
             val isCurrentBranch = branch == getCurrentBranch()
+            val view = binding.root
             
+            // Branch names are shown verbatim - the UI never parses or rewrites them.
             binding.textBranchName.text = branch
+            binding.textBranchName.setTypeface(null, if (isCurrentBranch) Typeface.BOLD else Typeface.NORMAL)
+            binding.textBranchName.setTextColor(
+                resolveThemeColor(view, if (isCurrentBranch) R.attr.colorPrimary else R.attr.colorOnSurface)
+                    ?: binding.textBranchName.currentTextColor
+            )
             
-            if (isCurrentBranch) {
-                val typedValue = TypedValue()
-                binding.root.context.theme.resolveAttribute(
-                    android.R.attr.colorPrimary,
-                    typedValue,
-                    true
-                )
-                binding.cardBranch.strokeColor = typedValue.data
-                binding.cardBranch.strokeWidth = 4
-            } else {
-                binding.cardBranch.strokeWidth = 0
+            // A dot marks the checked out branch; other rows keep the same
+            // space reserved so every branch name lines up in one column.
+            binding.viewCurrentDot.visibility = if (isCurrentBranch) View.VISIBLE else View.INVISIBLE
+            resolveThemeColor(view, R.attr.colorPrimary)?.let { color ->
+                binding.viewCurrentDot.backgroundTintList = ColorStateList.valueOf(color)
             }
             
-            binding.buttonCheckout.setOnClickListener {
-                if (!isCurrentBranch) {
-                    onCheckoutClick(branch)
+            // Nothing to check out or delete on the branch that is already
+            // checked out, so that row stays a clean single line.
+            binding.buttonMore.visibility = if (isCurrentBranch) View.GONE else View.VISIBLE
+            
+            binding.buttonMore.setOnClickListener { anchor ->
+                val popup = PopupMenu(view.context, anchor)
+                popup.inflate(R.menu.branch_row_actions)
+                popup.setOnMenuItemClickListener { item ->
+                    when (item.itemId) {
+                        R.id.action_checkout -> {
+                            if (!isCurrentBranch) {
+                                onCheckoutClick(branch)
+                            }
+                            true
+                        }
+                        R.id.action_delete -> {
+                            onDeleteClick(branch)
+                            true
+                        }
+                        else -> false
+                    }
                 }
+                popup.show()
             }
-            
-            binding.buttonDelete.setOnClickListener {
-                onDeleteClick(branch)
+        }
+        
+        private fun resolveThemeColor(view: View, attr: Int): Int? {
+            val context = view.context
+            val typedValue = TypedValue()
+            if (!context.theme.resolveAttribute(attr, typedValue, true)) return null
+            return if (typedValue.resourceId != 0) {
+                ContextCompat.getColor(context, typedValue.resourceId)
+            } else {
+                typedValue.data
             }
-            
-            binding.buttonCheckout.isEnabled = !isCurrentBranch
         }
     }
     

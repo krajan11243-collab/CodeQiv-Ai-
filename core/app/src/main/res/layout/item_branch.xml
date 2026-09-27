@@ -1,46 +1,59 @@
-<?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!-- Compact branch row.
+
+     The current branch is marked with a leading dot (see branch_current_dot)
+     and has no actions - there is nothing to check out or delete for the
+     branch that is already checked out. Every other row offers its actions
+     through an overflow menu so the branch name keeps as much width as
+     possible in the narrow Git panel. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/cardBranch"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginVertical="6dp"
-    app:cardElevation="2dp"
-    app:cardCornerRadius="12dp">
-    
+    android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:gravity="center_vertical">
-        
+        android:minHeight="48dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="14dp"
+        android:paddingEnd="4dp"
+        android:paddingVertical="4dp">
+
+        <View
+            android:id="@+id/viewCurrentDot"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/branch_current_dot"
+            android:visibility="invisible"/>
+
         <TextView
             android:id="@+id/textBranchName"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:ellipsize="middle"
             android:text="main"
-            android:textSize="18sp"
-            android:textStyle="bold"
+            android:textSize="15sp"
             android:textColor="?android:textColorPrimary"/>
-        
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonCheckout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Checkout"
-            android:textSize="12sp"
-            android:layout_marginEnd="4dp"
-            style="@style/Widget.Material3.Button.TonalButton"/>
-        
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonDelete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Delete"
-            android:textSize="12sp"
-            style="@style/Widget.Material3.Button.OutlinedButton"/>
+
+        <ImageButton
+            android:id="@+id/buttonMore"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_more_vert"
+            android:tint="?android:textColorSecondary"
+            android:contentDescription="Branch actions"/>
     </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="14dp"
+        android:background="?attr/colorOutlineVariant"/>
+</LinearLayout>

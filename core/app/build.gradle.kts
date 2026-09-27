@@ -42,8 +42,20 @@ buildscript {
   }
 }
 
+// AGP's file-dependency desugaring task (`desugar<Variant>FileDependencies`) is disabled
+// in this project; CI pre-creates its output directory instead
+// (see the "Generating missing dirs" step in .github/workflows/asm_build.yml).
+//
+// The match below is deliberately narrow. AGP also has tasks named
+// `l8DexDesugarLib<Variant>`, which contain "Desugar" as well, and those must keep
+// running: they produce the `desugar_jdk_libs` runtime dex that PackageAndroidArtifact
+// packs into the APK whenever core library desugaring is enabled. With them disabled the
+// APK contains no `j$` classes at all, so every desugared JDK call throws at runtime,
+// e.g. JGit's `java.util.stream.Collectors.toUnmodifiableList()` (used by
+// `RefDirectory.getRefsByPrefix(varargs)`, i.e. `ListMode.ALL` branch listing) fails with
+// `NoClassDefFoundError: j$.util.stream.DesugarCollectors`.
 tasks.configureEach {
-    if (name.contains("desugar", ignoreCase = true)) {
+    if (name.startsWith("desugar") && name.endsWith("FileDependencies")) {
         enabled = false
     }
 }
@@ -74,6 +86,23 @@ android {
   
 
   signingConfigs {
+      // One stable, repo-committed Android debug keystore, used by CI and by local builds
+      // alike. AGP otherwise defaults to ~/.android/debug.keystore (see AGP's
+      // SigningConfigFactory, which applies DefaultSigningConfig.DebugSigningConfig for the
+      // "debug" name). That file does not exist on a GitHub Actions runner, so AGP
+      // generated a brand-new random key on every run: each Debug APK then carried a
+      // different signer certificate (verified on runs 36273739542 vs 35924946644) and
+      // Android refused to install the new build over the previous one, forcing an
+      // uninstall for every update.
+      // The credentials below are the stock Android debug ones (androiddebugkey/android),
+      // so Debug builds still need no developer secrets.
+      getByName("debug") {
+          storeFile = file("${rootProject.projectDir}/signing/debug.keystore")
+          storePassword = "android"
+          keyAlias = "androiddebugkey"
+          keyPassword = "android"
+      }
+
       create("custom") {
           val keyStorePath = "${rootProject.projectDir}/signing/signing-key.jks"
           val keyStoreFile = file(keyStorePath)
@@ -97,7 +126,11 @@ android {
 
   buildTypes {
     debug {
-      signingConfig = signingConfigs.getByName("custom")
+      // Standard Android debug keystore (signing/debug.keystore, committed with the repo so
+      // CI and local builds keep one stable signing identity across installs).
+      // Debug builds must not require the release keystore credentials,
+      // so CI forks without signing secrets can still assembleDebug.
+      signingConfig = signingConfigs.getByName("debug")
     }
 
     release {
@@ -301,4 +334,14 @@ dependencies {
   // So we always copy the latest JAR file to assets
   compileOnly(projects.tooling.impl)
   
+}
+
+// SigningConfigPlugin (applied to all Android modules via the root build script's
+// afterEvaluate hook) assigns its own signing config to every build type, which would
+// override the debug assignment above. Re-assert the standard debug keystore here:
+// this block runs after the root script's afterEvaluate hook.
+afterEvaluate {
+  extensions.getByType<com.android.build.gradle.AppExtension>().run {
+    buildTypes.getByName("debug").signingConfig = signingConfigs.getByName("debug")
+  }
 }

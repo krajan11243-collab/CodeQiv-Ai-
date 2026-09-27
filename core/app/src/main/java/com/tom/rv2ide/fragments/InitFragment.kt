@@ -23,7 +23,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.tom.rv2ide.R
 import com.tom.rv2ide.configurations.GCProperties
@@ -84,7 +83,7 @@ class InitFragment : Fragment() {
                     // Repository is ready, MainActivity will handle navigation
                 }
                 RepositoryStatus.ERROR -> {
-                    Snackbar.make(binding.root, "Failed to initialize repository", Snackbar.LENGTH_LONG).show()
+                    binding.root.showGitFeedback("Failed to initialize repository", GitFeedbackStyle.ERROR)
                 }
                 else -> {}
             }
@@ -174,7 +173,7 @@ class InitFragment : Fragment() {
                 if (url.isNotBlank()) {
                     viewModel.cloneRepository(url, GCProperties.userProject, username, password)
                 } else {
-                    Snackbar.make(binding.root, "URL cannot be empty", Snackbar.LENGTH_SHORT).show()
+                    binding.root.showGitFeedback("URL cannot be empty", GitFeedbackStyle.ERROR)
                 }
             }
             .setNegativeButton("Cancel", null)

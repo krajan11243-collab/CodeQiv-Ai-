@@ -8,20 +8,83 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:orientation="vertical">
         
-        <com.google.android.material.navigationrail.NavigationRailView
-            android:id="@+id/navigationRail"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            app:labelVisibilityMode="labeled"
-            app:menuGravity="top"/>
+        <LinearLayout
+            android:id="@+id/repoHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp">
+            
+            <ImageView
+                android:id="@+id/imageGitIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_git"
+                android:tint="?attr/colorPrimary"
+                android:importantForAccessibility="no"/>
+            
+            <TextView
+                android:id="@+id/textRepoPath"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:singleLine="true"
+                android:ellipsize="middle"
+                android:textSize="13sp"
+                android:textColor="?android:textColorSecondary"/>
+            
+            <TextView
+                android:id="@+id/textRepoBranch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:maxWidth="170dp"
+                android:maxLines="1"
+                android:ellipsize="middle"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="3dp"
+                android:background="@drawable/chip_background"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:visibility="gone"/>
+
+            <!-- Expands the Git panel to the full width of the window and back. -->
+            <ImageButton
+                android:id="@+id/buttonExpand"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="4dp"
+                android:padding="7dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_expand_panel"
+                android:tint="?attr/colorOnSurfaceVariant"
+                android:contentDescription="Expand Git panel"/>
+        </LinearLayout>
         
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/viewPager"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+            
+            <com.google.android.material.navigationrail.NavigationRailView
+                android:id="@+id/navigationRail"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:labelVisibilityMode="labeled"
+                app:menuGravity="top"/>
+            
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPager"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+        </LinearLayout>
     </LinearLayout>
     
     <FrameLayout

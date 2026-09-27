@@ -1,37 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:orientation="vertical"
-  android:padding="16dp">
+  android:paddingHorizontal="20dp"
+  android:paddingTop="12dp"
+  android:paddingBottom="24dp">
 
-  <!-- Title row with browse icon button -->
+  <!-- Header: title + subtitle + explicit close -->
   <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:paddingBottom="8dp">
+    android:paddingBottom="4dp">
 
-    <TextView
+    <LinearLayout
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_weight="1"
-      android:text="@string/open_project"
-      android:textSize="20sp"
-      android:textStyle="bold" />
+      android:orientation="vertical">
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/projects_title"
+        android:textAppearance="?attr/textAppearanceHeadlineSmall" />
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="@string/projects_subtitle"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="?attr/colorOnSurfaceVariant" />
+
+    </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
-      android:id="@+id/btnBrowse"
-      style="@style/Widget.Material3.Button.TonalButton"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:contentDescription="@string/browse_other_location"
-      app:icon="@drawable/ic_folder"
-      android:text="import project"
-      app:iconGravity="textStart"
-      />
+      android:id="@+id/btnCloseProjects"
+      style="@style/Widget.Material3.Button.IconButton"
+      android:layout_width="48dp"
+      android:layout_height="48dp"
+      android:contentDescription="@string/projects_close"
+      app:icon="@drawable/ic_close"
+      app:iconTint="?attr/colorOnSurfaceVariant" />
 
   </LinearLayout>
 
@@ -39,7 +54,8 @@
     android:id="@+id/searchLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="4dp"
     android:hint="@string/search_projects_hint"
     app:startIconDrawable="@drawable/ic_search"
     app:endIconMode="clear_text"
@@ -69,7 +85,24 @@
     android:layout_height="wrap_content"
     android:text="@string/no_projects_found"
     android:textAlignment="center"
+    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+    android:textColor="?attr/colorOnSurfaceVariant"
     android:padding="32dp"
-    android:visibility="gone" />
+    android:visibility="gone"
+    tools:visibility="visible" />
+
+  <!-- Secondary browse action, full width for easy discovery -->
+  <com.google.android.material.button.MaterialButton
+    android:id="@+id/btnBrowse"
+    style="@style/Widget.Material3.Button.OutlinedButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    android:minHeight="48dp"
+    android:contentDescription="@string/browse_other_location"
+    app:icon="@drawable/ic_folder"
+    android:text="@string/browse"
+    app:iconGravity="textStart"
+    app:iconPadding="12dp" />
 
 </LinearLayout>

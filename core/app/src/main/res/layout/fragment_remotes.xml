@@ -10,95 +10,196 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         
-        <com.google.android.material.card.MaterialCardView
+        <!-- Screen header: plain block (not a card) so that the narrow Git panel
+             keeps as much horizontal space as possible for its content. -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:cardElevation="0dp"
-            app:cardCornerRadius="12dp">
-            
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="14dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="12dp">
-                
-                <LinearLayout
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/textScreenTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Remotes"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="?android:textColorPrimary"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonRefresh"
+                    style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:minWidth="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:paddingHorizontal="10dp"
+                    android:contentDescription="Refresh"
+                    app:icon="@drawable/ic_sync"
+                    app:iconSize="20dp"
+                    app:iconPadding="0dp"
+                    app:iconTint="?android:textColorSecondary"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textScreenSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:textSize="14sp"
+                android:textColor="?android:textColorSecondary"
+                android:visibility="gone"/>
+
+            <!-- Push / Pull / Fetch: three equal-width cells so the row stays
+                 balanced in the half-width panel and in expanded mode. -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/buttonPush"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
                     android:orientation="vertical"
-                    android:gravity="center_vertical">
-                    
+                    android:gravity="center"
+                    android:background="@drawable/git_action_background"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:clipToOutline="true"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_publish"
+                        android:tint="?attr/colorOnSecondaryContainer"
+                        android:importantForAccessibility="no"/>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Remote Operations"
-                        android:textSize="16sp"
-                        android:textStyle="bold"/>
-                    
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/buttonRefresh"
+                        android:layout_marginTop="4dp"
+                        android:maxLines="1"
+                        android:text="Push"
+                        android:textSize="12sp"
+                        android:textColor="?attr/colorOnSecondaryContainer"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/buttonPull"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/git_action_background"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:clipToOutline="true"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_downpull"
+                        android:tint="?attr/colorOnSecondaryContainer"
+                        android:importantForAccessibility="no"/>
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Refresh"
-                        app:icon="@drawable/ic_sync"
-                        style="@style/Widget.Material3.Button.TextButton"/>
+                        android:layout_marginTop="4dp"
+                        android:maxLines="1"
+                        android:text="Pull"
+                        android:textSize="12sp"
+                        android:textColor="?attr/colorOnSecondaryContainer"/>
                 </LinearLayout>
-                
-                    <LinearLayout
-                        android:layout_width="match_parent"
+
+                <LinearLayout
+                    android:id="@+id/buttonFetch"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/git_action_background"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:clipToOutline="true"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_sync"
+                        android:tint="?attr/colorOnSecondaryContainer"
+                        android:importantForAccessibility="no"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/buttonPush"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Push"
-                            android:textSize="14sp"
-                            android:layout_margin="4dp"
-                            app:icon="@drawable/ic_publish"
-                            app:iconGravity="textStart"
-                            app:iconPadding="4dp"
-                            style="@style/Widget.Material3.Button.TonalButton"/>
-                        
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/buttonPull"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Pull"
-                            android:textSize="14sp"
-                            android:layout_margin="4dp"
-                            app:icon="@drawable/ic_downpull"
-                            app:iconGravity="textStart"
-                            app:iconPadding="4dp"
-                            style="@style/Widget.Material3.Button.TonalButton"/>
-                        
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/buttonFetch"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Fetch"
-                            android:layout_margin="4dp"
-                            android:textSize="14sp"
-                            app:icon="@drawable/ic_sync"
-                            app:iconGravity="textStart"
-                            app:iconPadding="4dp"
-                            style="@style/Widget.Material3.Button.TonalButton"/>
-                    </LinearLayout>
+                        android:layout_marginTop="4dp"
+                        android:maxLines="1"
+                        android:text="Fetch"
+                        android:textSize="12sp"
+                        android:textColor="?attr/colorOnSecondaryContainer"/>
+                </LinearLayout>
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:background="?attr/colorOutlineVariant"/>
+        </LinearLayout>
         
-        <TextView
-            android:id="@+id/emptyStateText"
+        <LinearLayout
+            android:id="@+id/emptyState"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="No remotes configured\nAdd a remote to push/pull changes"
-            android:textSize="16sp"
-            android:textColor="?android:textColorSecondary"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
             android:gravity="center"
             android:padding="32dp"
-            android:visibility="gone"/>
+            android:visibility="gone">
+            
+            <TextView
+                android:id="@+id/emptyStateText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No remotes"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="?android:textColorPrimary"
+                android:gravity="center"/>
+            
+            <TextView
+                android:id="@+id/emptyStateSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Add a remote to push, pull or fetch changes"
+                android:textSize="14sp"
+                android:textColor="?android:textColorSecondary"
+                android:gravity="center"/>
+        </LinearLayout>
         
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewRemotes"
@@ -106,6 +207,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:paddingHorizontal="16dp"
+            android:paddingBottom="80dp"
             android:clipToPadding="false"/>
     </LinearLayout>
     
@@ -118,4 +220,10 @@
         android:text="Add Remote"
         app:elevation="0dp"
         app:icon="@drawable/ic_add"/>
+    
+    <ProgressBar
+        android:id="@+id/progressState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -68,8 +68,15 @@ class HistoryFragment : Fragment() {
     private fun setupObservers() {
         viewModel.commitHistory.observe(viewLifecycleOwner) { commits ->
             adapter.submitList(commits)
-            binding.emptyStateText.visibility = if (commits.isEmpty()) View.VISIBLE else View.GONE
-            binding.recyclerViewHistory.visibility = if (commits.isEmpty()) View.GONE else View.VISIBLE
+            
+            binding.progressState.visibility = View.GONE
+            val isEmpty = commits.isEmpty()
+            binding.recyclerViewHistory.visibility = if (isEmpty) View.GONE else View.VISIBLE
+            binding.emptyState.visibility = if (isEmpty) View.VISIBLE else View.GONE
+            
+            binding.textScreenSubtitle.text =
+                if (commits.size == 1) "1 commit" else "${commits.size} commits"
+            binding.textScreenSubtitle.visibility = if (isEmpty) View.GONE else View.VISIBLE
         }
     }
     

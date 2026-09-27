@@ -23,11 +23,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.tom.rv2ide.R
 import com.tom.rv2ide.databinding.FragmentSettingsBinding
+import com.tom.rv2ide.utils.GitFeedbackStyle
 import com.tom.rv2ide.utils.PreferencesManager
+import com.tom.rv2ide.utils.showGitFeedback
+import com.tom.rv2ide.utils.styleAsDestructive
 import com.tom.rv2ide.viewmodel.GitViewModel
 
 /**
@@ -84,14 +86,15 @@ class SettingsFragment : Fragment() {
         binding.buttonClearCredentials.setOnClickListener {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Clear Credentials")
-                .setMessage("Are you sure you want to clear saved credentials?")
+                .setMessage("Remove the username and password saved on this device?")
                 .setPositiveButton("Clear") { _, _ ->
                     prefsManager.clearCredentials()
                     binding.textCredentialsStatus.text = "Not saved"
-                    Snackbar.make(binding.root, "Credentials cleared", Snackbar.LENGTH_SHORT).show()
+                    binding.root.showGitFeedback("Credentials cleared", GitFeedbackStyle.SUCCESS)
                 }
                 .setNegativeButton("Cancel", null)
                 .show()
+                .styleAsDestructive()
         }
     }
     
@@ -115,9 +118,9 @@ class SettingsFragment : Fragment() {
                     prefsManager.setGitUserEmail(email)
                     viewModel.setUserConfig(name, email)
                     loadSettings()
-                    Snackbar.make(binding.root, "User config updated", Snackbar.LENGTH_SHORT).show()
+                    binding.root.showGitFeedback("User config updated", GitFeedbackStyle.SUCCESS)
                 } else {
-                    Snackbar.make(binding.root, "Name and email cannot be empty", Snackbar.LENGTH_SHORT).show()
+                    binding.root.showGitFeedback("Name and email cannot be empty", GitFeedbackStyle.ERROR)
                 }
             }
             .setNegativeButton("Cancel", null)
