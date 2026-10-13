@@ -110,6 +110,12 @@ class ChatFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         
         initializeViews(view)
+        view.findViewById<View>(R.id.closeChatButton)?.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+        view.findViewById<View>(R.id.chatMenuButton)?.setOnClickListener {
+            showSnackbar("CodeQiv AI")
+        }
         setupRecyclerView()
         setupManagers()
         setupListeners()
