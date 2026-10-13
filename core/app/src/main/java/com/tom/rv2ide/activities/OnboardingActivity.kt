@@ -75,11 +75,8 @@ class OnboardingActivity : AppIntro2() {
 
     super.onCreate(savedInstanceState)
 
-    // CodeQiv AI: bypass first-run SDK/JDK installation wizard.
-    // Keep the existing permission/onboarding checks below, but skip tool downloads.
-    startActivity(Intent(this, MainActivity::class.java))
-    finish()
-    return
+    // Keep the normal first-run onboarding and permission requests.
+    // The SDK/JDK setup slide is intentionally omitted so startup never launches the terminal installer.
 
     setSwipeLock(true)
     setTransformer(AppIntroPageTransformerType.Fade)
@@ -173,8 +170,9 @@ class OnboardingActivity : AppIntro2() {
   }
 
   private fun isSetupCompleted(): Boolean {
-    return checkToolsIsInstalled() &&
-        StatPreferences.statConsentDialogShown &&
+    // SDK/JDK downloads are not part of first-run onboarding. The app can open
+    // after consent and the required permissions are complete.
+    return StatPreferences.statConsentDialogShown &&
         PermissionsFragment.areAllPermissionsGranted(this)
   }
 
