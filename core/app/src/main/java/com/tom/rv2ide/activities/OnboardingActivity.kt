@@ -75,9 +75,11 @@ class OnboardingActivity : AppIntro2() {
 
     super.onCreate(savedInstanceState)
 
-    if (tryNavigateToMainIfSetupIsCompleted()) {
-      return
-    }
+    // CodeQiv AI: bypass first-run SDK/JDK installation wizard.
+    // Keep the existing permission/onboarding checks below, but skip tool downloads.
+    startActivity(Intent(this, MainActivity::class.java))
+    finish()
+    return
 
     setSwipeLock(true)
     setTransformer(AppIntroPageTransformerType.Fade)
@@ -135,9 +137,7 @@ class OnboardingActivity : AppIntro2() {
       addSlide(PermissionsFragment.newInstance(this))
     }
 
-    if (!checkToolsIsInstalled()) {
-      addSlide(IdeSetupConfigurationFragment.newInstance(this))
-    }
+    // The SDK/JDK setup slide is intentionally omitted for CodeQiv AI.
   }
 
   override fun onResume() {
@@ -162,20 +162,9 @@ class OnboardingActivity : AppIntro2() {
       return
     }
 
-    if (!checkToolsIsInstalled() && currentFragment is IdeSetupConfigurationFragment) {
-      val intent = Intent(this, TerminalActivity::class.java)
-      if (currentFragment.isAutoInstall()) {
-        intent.putExtra(TerminalActivity.EXTRA_ONBOARDING_RUN_IDESETUP, true)
-        intent.putExtra(
-            TerminalActivity.EXTRA_ONBOARDING_RUN_IDESETUP_ARGS,
-            currentFragment.buildIdeSetupArguments(),
-        )
-      }
-      terminalActivityCallback.launch(intent)
-      return
-    }
-
-    tryNavigateToMainIfSetupIsCompleted()
+    // Do not launch TerminalActivity for SDK/JDK downloads.
+    startActivity(Intent(this, MainActivity::class.java))
+    finish()
   }
 
   private fun checkToolsIsInstalled(): Boolean {
