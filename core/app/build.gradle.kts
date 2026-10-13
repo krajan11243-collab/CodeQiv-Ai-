@@ -96,10 +96,8 @@ android {
   }
 
   buildTypes {
-    debug {
-      signingConfig = signingConfigs.getByName("custom")
-    }
-
+    // Debug APKs use Android Gradle Plugin's default debug keystore.
+    // Keep the custom keystore only for release builds, where release signing is required.
     release {
       isShrinkResources = false
       signingConfig = signingConfigs.getByName("custom")
