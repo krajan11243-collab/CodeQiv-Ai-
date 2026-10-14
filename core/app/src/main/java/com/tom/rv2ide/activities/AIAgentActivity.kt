@@ -23,7 +23,11 @@ class AIAgentActivity : AppCompatActivity() {
         setContentView(host)
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(host.id, ArtificialFragment())
+                .replace(host.id, ArtificialFragment().apply {
+                    arguments = Bundle().apply {
+                        putBoolean(ArtificialFragment.ARG_STANDALONE_CODEQIV_CHAT, true)
+                    }
+                })
                 .commit()
         }
     }
