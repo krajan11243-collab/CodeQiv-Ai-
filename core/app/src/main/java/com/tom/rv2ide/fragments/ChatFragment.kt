@@ -52,6 +52,8 @@ class ChatFragment : Fragment() {
 
     private lateinit var aiAgent: AIAgentManager
     private lateinit var promptInput: TextInputEditText
+    private lateinit var statusCard: LinearLayout
+    private lateinit var welcomeIcon: View
     private lateinit var executeBtn: MaterialButton
     private lateinit var clearBtn: MaterialButton
     private lateinit var statusText: MaterialTextView
@@ -114,7 +116,15 @@ class ChatFragment : Fragment() {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
         view.findViewById<View>(R.id.chatMenuButton)?.setOnClickListener {
-            showSnackbar("CodeQiv AI")
+            android.app.AlertDialog.Builder(requireContext())
+                .setTitle("CodeQiv AI")
+                .setItems(arrayOf("New chat", "AI model settings", "Project context")) { _, which ->
+                    when (which) {
+                        0 -> clearConversation()
+                        1 -> openModelSettings()
+                        2 -> showSnackbar("Current project context is available to CodeQiv AI")
+                    }
+                }.show()
         }
         setupRecyclerView()
         setupManagers()
@@ -137,6 +147,9 @@ class ChatFragment : Fragment() {
 
     private fun initializeViews(view: View) {
         promptInput = view.findViewById(R.id.anyText)
+        statusCard = view.findViewById(R.id.statusCard)
+        welcomeIcon = view.findViewById(R.id.welcomeIcon)
+        statusCard.visibility = View.GONE
         executeBtn = view.findViewById(R.id.executeBtn)
         clearBtn = view.findViewById(R.id.clearBtn)
         statusText = view.findViewById(R.id.statusText)
@@ -187,22 +200,87 @@ class ChatFragment : Fragment() {
 
     private fun setupListeners() {
         executeBtn.setOnClickListener {
-            val userRequest = promptInput.text.toString()
-            
+            val userRequest = promptInput.text?.toString()?.trim().orEmpty()
             if (userRequest.isBlank()) {
-                showSnackbar("Please enter a request")
+                showSnackbar("Please enter a message")
                 return@setOnClickListener
             }
-            
+            if (statusCard.visibility == View.VISIBLE) {
+                val previousResponse = statusText.text?.toString().orEmpty()
+                if (previousResponse.isNotBlank() && previousResponse != "Thinking…") addChatBubble(previousResponse, false)
+            }
+            welcomeIcon.visibility = View.GONE
+            view?.findViewById<View>(R.id.welcomeMessage)?.visibility = View.GONE
+            view?.findViewById<View>(R.id.welcomeSpacerTop)?.visibility = View.GONE
+            view?.findViewById<View>(R.id.welcomeSpacerBottom)?.visibility = View.GONE
+            addChatBubble(userRequest, true)
+            statusCard.visibility = View.VISIBLE
+            statusText.text = "Thinking…"
+            promptInput.text?.clear()
             codeCompletionManager.clearSuggestion()
             aiRequestHandler.execute(userRequest)
+            scrollChatToBottom()
         }
-    
         clearBtn.setOnClickListener {
-            clearConversation()
+            android.app.AlertDialog.Builder(requireContext())
+                .setTitle("Add to chat")
+                .setItems(arrayOf("Use current project context", "Choose AI model", "Clear conversation")) { _, which ->
+                    when (which) {
+                        0 -> showSnackbar("Current project context is available to CodeQiv AI")
+                        1 -> openModelSettings()
+                        2 -> clearConversation()
+                    }
+                }.show()
+        }
+        view?.findViewById<View>(R.id.modelPickerButton)?.setOnClickListener { openModelSettings() }
+        view?.findViewById<View>(R.id.navFiles)?.setOnClickListener { showSnackbar("Open a project from the CodeQiv home screen") }
+        view?.findViewById<View>(R.id.navAndroid)?.setOnClickListener { showSnackbar("Android tools are available in IDE Configurations") }
+        view?.findViewById<View>(R.id.navGit)?.setOnClickListener { showSnackbar("GitHub sync is available from the CodeQiv home screen") }
+        view?.findViewById<View>(R.id.navAgent)?.setOnClickListener {
+            promptInput.requestFocus()
+            scrollChatToBottom()
         }
     }
-    
+
+    private fun openModelSettings() {
+        try {
+            startActivity(android.content.Intent(requireContext(), com.tom.rv2ide.activities.PreferencesActivity::class.java))
+        } catch (_: Exception) {
+            showSnackbar("Open Preferences from the CodeQiv home screen to configure AI")
+        }
+    }
+
+    private fun addChatBubble(message: String, isUser: Boolean) {
+        val density = resources.displayMetrics.density
+        val bubble = android.widget.TextView(requireContext()).apply {
+            text = message
+            setTextColor(android.graphics.Color.rgb(238, 235, 240))
+            textSize = 15f
+            setPadding((16 * density).toInt(), (12 * density).toInt(), (16 * density).toInt(), (12 * density).toInt())
+            maxWidth = (resources.displayMetrics.widthPixels * 0.82f).toInt()
+            background = android.graphics.drawable.GradientDrawable().apply {
+                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                cornerRadius = 22f * density
+                setColor(if (isUser) android.graphics.Color.rgb(39, 34, 48) else android.graphics.Color.rgb(25, 24, 27))
+                setStroke((density).toInt().coerceAtLeast(1), if (isUser) android.graphics.Color.rgb(119, 76, 190) else android.graphics.Color.rgb(55, 52, 58))
+            }
+        }
+        val params = android.widget.LinearLayout.LayoutParams(
+            android.view.ViewGroup.LayoutParams.WRAP_CONTENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply {
+            topMargin = (8 * density).toInt()
+            bottomMargin = (4 * density).toInt()
+            gravity = if (isUser) android.view.Gravity.END else android.view.Gravity.START
+        }
+        view?.findViewById<android.widget.LinearLayout>(R.id.chatMessagesContainer)?.addView(bubble, params)
+    }
+
+    private fun scrollChatToBottom() {
+        view?.findViewById<androidx.core.widget.NestedScrollView>(R.id.mainScrollView)?.post {
+            view?.findViewById<androidx.core.widget.NestedScrollView>(R.id.mainScrollView)?.fullScroll(View.FOCUS_DOWN)
+        }
+    }
+
     private fun registerPreferenceListener() {
         val prefs = requireContext().getSharedPreferences("ai_preferences", android.content.Context.MODE_PRIVATE)
         prefs.registerOnSharedPreferenceChangeListener(sharedPrefsListener)
@@ -428,7 +506,13 @@ class ChatFragment : Fragment() {
                 aiAgent.clearConversation()
                 
                 promptInput.text?.clear()
-                statusText.text = "Conversation cleared. Ready for new request."
+                statusText.text = ""
+                statusCard.visibility = View.GONE
+                view?.findViewById<android.widget.LinearLayout>(R.id.chatMessagesContainer)?.removeAllViews()
+                welcomeIcon.visibility = View.VISIBLE
+                view?.findViewById<View>(R.id.welcomeMessage)?.visibility = View.VISIBLE
+                view?.findViewById<View>(R.id.welcomeSpacerTop)?.visibility = View.VISIBLE
+                view?.findViewById<View>(R.id.welcomeSpacerBottom)?.visibility = View.VISIBLE
                 fileModificationList.visibility = View.GONE
                 summaryCard.visibility = View.GONE
                 fileModificationAdapter.clear()
