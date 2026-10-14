@@ -6,14 +6,17 @@
   android:id="@+id/coordinator"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:background="#030712"
+  android:paddingStart="20dp"
+  android:paddingEnd="20dp"
   app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
-
 
   <com.google.android.material.imageview.ShapeableImageView
     android:id="@+id/main_image"
-    android:layout_width="80dp"
-    android:layout_height="80dp"
-    android:layout_marginTop="10dp"
+    android:layout_width="84dp"
+    android:layout_height="84dp"
+    android:layout_marginTop="24dp"
+    android:contentDescription="@string/app_name"
     android:src="@drawable/ic_acs"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
@@ -24,9 +27,10 @@
     android:id="@+id/getStarted"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_marginTop="18dp"
     android:text="@string/get_started"
-    android:layout_marginTop="10dp"
-    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+    android:textColor="#F8FAFC"
+    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
     android:textStyle="bold"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
@@ -34,10 +38,12 @@
 
   <TextView
     android:id="@+id/greetingText"
-    android:layout_width="wrap_content"
+    android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="4dp"
+    android:layout_marginTop="6dp"
+    android:gravity="center"
     android:text="@string/msg_create_new_project_greeting"
+    android:textColor="#AAB4C5"
     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
@@ -47,13 +53,15 @@
     android:id="@+id/actions"
     android:layout_width="0dp"
     android:layout_height="0dp"
-    android:layout_marginTop="16dp"
+    android:layout_marginTop="24dp"
     android:layout_marginBottom="16dp"
+    android:clipToPadding="false"
+    android:paddingBottom="8dp"
     app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="@id/greetingText"
-    app:layout_constraintStart_toStartOf="@id/greetingText"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@id/greetingText"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
     tools:listitem="@layout/layout_main_action_item" />
-    
+
 </androidx.constraintlayout.widget.ConstraintLayout>
