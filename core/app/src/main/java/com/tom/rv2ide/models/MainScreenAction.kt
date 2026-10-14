@@ -65,7 +65,7 @@ constructor(
             )
 
         val aiChat =
-            MainScreenAction(ACTION_AI_CHAT, R.string.ai_agent_title, R.drawable.ic_ai_agent)
+            MainScreenAction(ACTION_AI_CHAT, R.string.ai_agent_title, R.drawable.ic_codeqiv_ai)
 
         val openTerminal =
             MainScreenAction(ACTION_OPEN_TERMINAL, R.string.title_terminal, R.drawable.ic_terminal)
