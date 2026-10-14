@@ -84,6 +84,14 @@ class ArtificialFragment(
     
         setupNavigationRail()
         setupFab()
+
+        if (arguments?.getBoolean(ARG_STANDALONE_CODEQIV_CHAT, false) == true) {
+            view.findViewById<View>(R.id.appBarLayout).visibility = View.GONE
+            navigationRail.visibility = View.GONE
+            fabToggleRail.visibility = View.GONE
+            overlayView.visibility = View.GONE
+            undoFab.visibility = View.GONE
+        }
         
         view.post {
             setupViewPager()
@@ -241,6 +249,7 @@ class ArtificialFragment(
     }
     
     companion object {
+        const val ARG_STANDALONE_CODEQIV_CHAT = "standalone_codeqiv_chat"
         private const val KEY_VIEWPAGER_POSITION = "viewpager_position"
         private const val KEY_CONTENT_VISIBILITY = "content_visibility"
     }
