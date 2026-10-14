@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.tom.rv2ide.R
-import com.tom.rv2ide.fragments.sidebar.ArtificialFragment
+import com.tom.rv2ide.fragments.ChatFragment
 
 /** Standalone entry point for CodeQiv AI, using the existing project-aware agent UI. */
 class AIAgentActivity : AppCompatActivity() {
@@ -23,11 +23,7 @@ class AIAgentActivity : AppCompatActivity() {
         setContentView(host)
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(host.id, ArtificialFragment().apply {
-                    arguments = Bundle().apply {
-                        putBoolean(ArtificialFragment.ARG_STANDALONE_CODEQIV_CHAT, true)
-                    }
-                })
+                .replace(host.id, ChatFragment())
                 .commit()
         }
     }
