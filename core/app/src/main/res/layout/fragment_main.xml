@@ -48,7 +48,7 @@
       android:layout_height="176dp"
       android:layout_marginTop="24dp"
       android:layout_marginBottom="12dp"
-      android:src="@drawable/ic_acs"
+      android:src="@drawable/ic_codeqiv_ffx"
       android:contentDescription="CodeQiv FFX logo"
       app:shapeAppearance="@style/AppTheme.ShapeAppearance.MainFragment.Logo" />
 
