@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,37 +8,80 @@
     android:layout_marginEnd="1dp"
     android:layout_marginTop="5dp"
     android:layout_marginBottom="5dp"
-    app:cardElevation="0dp"
     app:cardCornerRadius="18dp"
+    app:cardElevation="0dp"
     app:strokeWidth="1dp"
     app:strokeColor="#6D42D8"
-    app:cardBackgroundColor="#171321">
+    app:cardBackgroundColor="#12111C">
 
-    <com.google.android.material.button.MaterialButton
-        style="@style/Widget.Material3.Button.TextButton.Icon"
-        android:id="@+id/actionButton"
+    <LinearLayout
+        android:id="@+id/actionContainer"
         android:layout_width="match_parent"
-        android:layout_height="68dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:elevation="0dp"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:textAlignment="textStart"
-        android:gravity="center_vertical|start"
-        android:paddingStart="18dp"
-        android:paddingEnd="18dp"
-        android:textColor="#F5F6FF"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:cornerRadius="18dp"
-        app:iconPadding="14dp"
-        app:iconSize="26dp"
-        android:stateListAnimator="@null"
-        app:rippleColor="#263F8BFF"
-        app:backgroundTint="@android:color/transparent"
-        app:iconTint="#B18CFF"
-        tools:icon="@drawable/ic_add"
-        tools:text="@string/msg_create_new_project" />
+        android:layout_height="82dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground">
 
+        <FrameLayout
+            android:id="@+id/actionIconTile"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:background="@drawable/bg_codeqiv_action_icon">
+
+            <ImageView
+                android:id="@+id/actionIcon"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_add"
+                app:tint="#B18CFF"
+                tools:ignore="UseAppTint" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="8dp">
+
+            <TextView
+                android:id="@+id/actionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#F6F6FC"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end"
+                tools:text="Create project" />
+
+            <TextView
+                android:id="@+id/actionSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:textColor="#AAB4CC"
+                android:textSize="12sp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                tools:text="Start a new Android project" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/actionChevron"
+            android:layout_width="28dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="›"
+            android:textSize="34sp"
+            android:textColor="#B18CFF"
+            android:includeFontPadding="false" />
+    </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
