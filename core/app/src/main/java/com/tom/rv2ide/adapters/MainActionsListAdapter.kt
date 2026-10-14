@@ -79,8 +79,16 @@ constructor(val actions: List<MainScreenAction> = emptyList()) :
       radius = 18f * resources.displayMetrics.density
     }
 
-    binding.actionTitle.text = context.getString(action.text)
-    binding.actionSubtitle.text = subtitles.getOrElse(position) { "Open " + context.getString(action.text) }
+    binding.actionTitle.text = when (action.id) {
+      2 -> "AI chat"
+      6 -> "GitHub"
+      else -> context.getString(action.text)
+    }
+    binding.actionSubtitle.text = when (action.id) {
+      2 -> "Ask, generate and fix code"
+      6 -> "Clone, push and sync with GitHub"
+      else -> subtitles.getOrElse(position) { "Open " + context.getString(action.text) }
+    }
     binding.actionIcon.setImageResource(action.icon)
     binding.actionIcon.imageTintList = ColorStateList.valueOf(accent)
     binding.actionChevron.setTextColor(accent)
