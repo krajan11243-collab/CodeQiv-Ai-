@@ -220,15 +220,19 @@
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
-            <ImageButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/clearBtn"
                 android:layout_width="42dp"
                 android:layout_height="42dp"
                 android:layout_marginEnd="10dp"
-                android:background="@drawable/bg_codeqiv_chat_chip"
+                android:minWidth="0dp"
+                android:padding="0dp"
                 android:contentDescription="Clear prompt"
-                android:src="@drawable/ic_clear"
-                android:tint="#F2EDE8" />
+                android:text=""
+                app:icon="@drawable/ic_clear"
+                app:iconTint="#F2EDE8"
+                app:backgroundTint="#29272B"
+                app:cornerRadius="21dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/modelPickerButton"
