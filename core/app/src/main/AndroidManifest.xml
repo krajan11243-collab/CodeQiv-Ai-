@@ -68,6 +68,11 @@
       android:name=".activities.OnboardingActivity" />
     <activity
       android:exported="false"
+      android:name=".activities.AIAgentActivity"
+      android:windowSoftInputMode="adjustResize"
+      android:theme="@style/Theme.AndroidIDE" />
+    <activity
+      android:exported="false"
       android:name=".activities.MainActivity"
       android:theme="@style/Theme.AndroidIDE" />
     <activity
