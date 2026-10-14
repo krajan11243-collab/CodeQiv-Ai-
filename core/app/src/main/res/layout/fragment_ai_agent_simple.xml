@@ -41,7 +41,8 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Close AI chat"
                 android:src="@android:drawable/ic_menu_close_clear_cancel"
-                android:tint="#F4F4F4" />
+                android:tint="#F4F4F4"
+                android:visibility="gone" />
         </LinearLayout>
 
         <FrameLayout
@@ -66,10 +67,6 @@
                     android:textColor="#FF805C"
                     android:textSize="76sp"
                     android:fontFamily="sans"
-                    android:shadowColor="#FFFF7043"
-                    android:shadowDx="0"
-                    android:shadowDy="0"
-                    android:shadowRadius="22"
                     android:includeFontPadding="false" />
 
                 <TextView
@@ -79,7 +76,7 @@
                     android:gravity="center"
                     android:text="Evening, how can I help you today?"
                     android:textColor="#F5F2F0"
-                    android:textSize="25sp"
+                    android:textSize="26sp"
                     android:fontFamily="serif"
                     android:lineSpacingExtra="3dp" />
             </LinearLayout>
