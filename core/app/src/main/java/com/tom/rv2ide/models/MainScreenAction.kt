@@ -42,11 +42,13 @@ constructor(
 
     const val ACTION_CREATE_PROJECT = 0
     const val ACTION_OPEN_PROJECT = 1
-    const val ACTION_CLONE_REPO = 2
+    const val ACTION_AI_CHAT = 2
+    const val ACTION_CLONE_REPO = 7
     const val ACTION_OPEN_TERMINAL = 3
     const val ACTION_PREFERENCES = 4
     const val ACTION_DONATE = 5
-    const val ACTION_DOCS = 6
+    const val ACTION_GITHUB = 6
+    const val ACTION_DOCS = 8
 
     /** Get all main screen actions. */
     @JvmStatic
@@ -62,8 +64,8 @@ constructor(
                 R.drawable.ic_folder,
             )
 
-        val cloneGitRepository =
-            MainScreenAction(ACTION_CLONE_REPO, R.string.git_clone_repo, R.drawable.ic_git)
+        val aiChat =
+            MainScreenAction(ACTION_AI_CHAT, R.string.ai_agent_title, R.drawable.ic_ai_agent)
 
         val openTerminal =
             MainScreenAction(ACTION_OPEN_TERMINAL, R.string.title_terminal, R.drawable.ic_terminal)
@@ -73,17 +75,17 @@ constructor(
 
         val donate = MainScreenAction(ACTION_DONATE, R.string.btn_idecfg, R.drawable.ic_cfg_main)
 
-        val docs = MainScreenAction(ACTION_DOCS, R.string.btn_docs, R.drawable.ic_docs)
+        val github = MainScreenAction(ACTION_GITHUB, R.string.git_clone_repo, R.drawable.ic_git)
 
         Collections.addAll(
             this,
             createProject,
             openProject,
-            cloneGitRepository,
+            aiChat,
             openTerminal,
             preferences,
             donate,
-            docs,
+            github,
         )
       }
     }
