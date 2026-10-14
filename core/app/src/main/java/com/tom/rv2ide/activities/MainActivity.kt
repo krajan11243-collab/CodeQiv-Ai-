@@ -113,6 +113,8 @@ class MainActivity : EdgeToEdgeIDEActivity() {
   }
 
   private fun onScreenChanged(screen: Int?) {
+    // The branded home screen owns its header; keep the IDE toolbar for template screens only.
+    binding.appbar.isVisible = screen != SCREEN_MAIN
     val previous = viewModel.previousScreen
     if (previous != -1) {
       val setAxisToX =
