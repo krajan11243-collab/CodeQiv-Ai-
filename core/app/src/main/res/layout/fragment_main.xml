@@ -44,10 +44,10 @@
 
     <com.google.android.material.imageview.ShapeableImageView
       android:id="@+id/main_image"
-      android:layout_width="132dp"
-      android:layout_height="132dp"
-      android:layout_marginTop="20dp"
-      android:layout_marginBottom="10dp"
+      android:layout_width="176dp"
+      android:layout_height="176dp"
+      android:layout_marginTop="24dp"
+      android:layout_marginBottom="12dp"
       android:src="@drawable/ic_acs"
       android:contentDescription="CodeQiv FFX logo"
       app:shapeAppearance="@style/AppTheme.ShapeAppearance.MainFragment.Logo" />
@@ -71,7 +71,7 @@
       android:layout_marginBottom="14dp"
       android:text="@string/msg_create_new_project_greeting"
       android:textColor="#AAB5D0"
-      android:textSize="14sp"
+      android:textSize="15sp"
       android:gravity="center" />
 
     <androidx.recyclerview.widget.RecyclerView
