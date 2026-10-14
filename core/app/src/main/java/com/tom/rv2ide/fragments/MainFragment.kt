@@ -112,7 +112,8 @@ class MainFragment : BaseFragment() {
             when (action.id) {
               MainScreenAction.ACTION_CREATE_PROJECT -> showCreateProject()
               MainScreenAction.ACTION_OPEN_PROJECT -> showProjectsBottomSheet()
-              MainScreenAction.ACTION_CLONE_REPO -> showGitCloneBottomSheet()
+              MainScreenAction.ACTION_AI_CHAT -> startActivity(Intent(requireActivity(), com.tom.rv2ide.activities.AIAgentActivity::class.java))
+              MainScreenAction.ACTION_CLONE_REPO, MainScreenAction.ACTION_GITHUB -> showGitCloneBottomSheet()
               MainScreenAction.ACTION_OPEN_TERMINAL ->
                   startActivity(Intent(requireActivity(), TerminalActivity::class.java))
 
