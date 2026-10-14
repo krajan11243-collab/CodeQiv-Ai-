@@ -19,6 +19,9 @@ package com.tom.rv2ide.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.content.res.ColorStateList
+import android.graphics.Color
+import com.google.android.material.card.MaterialCardView
 import androidx.recyclerview.widget.RecyclerView
 import com.tom.rv2ide.databinding.LayoutMainActionItemBinding
 import com.tom.rv2ide.models.MainScreenAction
@@ -45,9 +48,27 @@ constructor(val actions: List<MainScreenAction> = emptyList()) :
     val action = getAction(index = position)
     val binding = holder.binding
 
+    val accents = intArrayOf(
+        Color.rgb(157, 82, 255),
+        Color.rgb(0, 174, 255),
+        Color.rgb(0, 229, 159),
+        Color.rgb(255, 166, 50),
+        Color.rgb(255, 61, 174),
+        Color.rgb(0, 205, 239),
+        Color.rgb(255, 65, 89),
+    )
+    val accent = accents[position % accents.size]
+    (binding.root as? MaterialCardView)?.apply {
+      strokeColor = accent
+      setCardBackgroundColor(Color.rgb(15, 17, 29))
+      strokeWidth = (1.2f * resources.displayMetrics.density).toInt()
+    }
+
     binding.actionButton.apply {
       setText(action.text)
       setIconResource(action.icon)
+      iconTint = ColorStateList.valueOf(accent)
+      setTextColor(Color.rgb(246, 247, 255))
       setOnClickListener { action.onClick?.invoke(action, it) }
       action.onLongClick?.let { onLongClick -> setOnLongClickListener { onLongClick(action, it) } }
     }

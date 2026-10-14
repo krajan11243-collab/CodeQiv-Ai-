@@ -6,6 +6,7 @@ on:
       - "dev"
       - "main" 
       - "indexing"
+      - "feature/codeqiv-neon-ui"
       - "release/**"
     paths-ignore:
       - '**.md'

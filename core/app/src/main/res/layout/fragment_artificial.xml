@@ -4,20 +4,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:background="#050505">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/yet_filled_chip_background"
-        android:layout_margin="6dp"
-        android:elevation="4dp">
+        android:background="#050505"
+        android:layout_margin="0dp"
+        android:elevation="0dp">
 
         <LinearLayout
             android:id="@+id/topBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingVertical="8dp">
@@ -30,6 +31,7 @@
                 android:layout_marginEnd="8dp"
                 android:src="@drawable/ic_menu"
                 app:fabCustomSize="32dp"
+                app:backgroundTint="#242424"
                 app:tint="?attr/colorOnSurface" />
 
             <com.google.android.material.tabs.TabLayout
@@ -38,6 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
+                android:visibility="gone"
                 app:tabMode="fixed"
                 app:tabGravity="fill"
                 style="@style/Widget.Material3.TabLayout" />
@@ -50,6 +53,7 @@
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <FrameLayout
