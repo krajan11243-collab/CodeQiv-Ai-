@@ -72,7 +72,9 @@ class ChatFragment : Fragment() {
     private var lastMonitoredFile: File? = null
     private var isSettingUpCompletion = false
     
-    private val userRootProject = getProjectRoot().absolutePath.toString()
+    private val userRootProject: String by lazy {
+        runCatching { getProjectRoot().absolutePath }.getOrDefault("")
+    }
     
     private val sharedPrefsListener = SharedPreferences.OnSharedPreferenceChangeListener { prefs, key ->
         if (key == "code_completion_enabled") {
