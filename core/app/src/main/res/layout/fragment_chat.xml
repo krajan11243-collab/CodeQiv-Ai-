@@ -1,315 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#08080A"
-    android:fitsSystemWindows="true">
-
-    <LinearLayout
-        android:id="@+id/chatTopBar"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="18dp"
-        android:paddingEnd="12dp">
-
-        <ImageButton
-            android:id="@+id/chatMenuButton"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Chat menu"
-            android:src="@android:drawable/ic_menu_sort_by_size"
-            android:tint="#F4F4F4" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
-
-        <ImageButton
-            android:id="@+id/closeChatButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:visibility="gone"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Close AI chat"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
-            android:tint="#F2F2F2" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+ android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="#08080A" android:fitsSystemWindows="true">
+ <LinearLayout android:id="@+id/chatTopBar" android:layout_width="match_parent" android:layout_height="56dp" android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="24dp" android:paddingEnd="16dp">
+  <ImageButton android:id="@+id/chatMenuButton" android:layout_width="42dp" android:layout_height="42dp" android:background="?attr/selectableItemBackgroundBorderless" android:contentDescription="Open chat menu" android:src="@drawable/ic_menu" android:tint="#F4F4F4"/>
+  <Space android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"/>
+  <TextView android:id="@+id/chatBrandTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CodeQiv" android:textColor="#F4F1F5" android:textSize="18sp" android:textStyle="bold" android:visibility="gone"/>
+  <ImageButton android:id="@+id/closeChatButton" android:layout_width="40dp" android:layout_height="40dp" android:visibility="gone" android:background="?attr/selectableItemBackgroundBorderless" android:contentDescription="Close AI chat" android:src="@android:drawable/ic_menu_close_clear_cancel" android:tint="#F2F2F2"/>
+ </LinearLayout>
+ <androidx.core.widget.NestedScrollView android:id="@+id/mainScrollView" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true" android:clipToPadding="false" android:paddingStart="24dp" android:paddingEnd="24dp" android:paddingTop="8dp" android:paddingBottom="12dp" android:overScrollMode="never">
+  <LinearLayout android:id="@+id/chatContent" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center_horizontal">
+   <Space android:id="@+id/welcomeSpacerTop" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"/>
+   <ImageView android:id="@+id/welcomeIcon" android:layout_width="86dp" android:layout_height="86dp" android:layout_marginBottom="18dp" android:contentDescription="CodeQiv FFX logo" android:src="@drawable/ic_codeqiv_ffx" android:scaleType="fitCenter"/>
+   <TextView android:id="@+id/welcomeMessage" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="24dp" android:fontFamily="serif" android:gravity="center" android:lineSpacingExtra="5dp" android:text="Evening, how can I help you today?" android:textColor="#F7F4F1" android:textSize="27sp"/>
+   <LinearLayout android:id="@+id/chatMessagesContainer" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center_horizontal"/>
+   <LinearLayout android:id="@+id/statusCard" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="12dp" android:padding="14dp" android:background="@drawable/bg_codeqiv_chat_chip" android:visibility="gone">
+    <com.google.android.material.textview.MaterialTextView android:id="@+id/statusText" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Ready to assist you" android:textColor="#E9E5E1" android:textIsSelectable="true" android:textSize="15sp" android:lineSpacingExtra="3dp"/>
+    <com.google.android.material.progressindicator.CircularProgressIndicator android:id="@+id/progressIndicator" android:layout_width="24dp" android:layout_height="24dp" android:layout_marginTop="8dp" android:indeterminate="true" android:visibility="gone" app:indicatorSize="24dp" style="@style/Widget.Material3.CircularProgressIndicator"/>
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/fileModificationList" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:nestedScrollingEnabled="false" android:visibility="gone"/>
+    <LinearLayout android:id="@+id/summaryCard" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingTop="10dp" android:visibility="gone">
+     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Modification Summary" android:textColor="#F4F0ED" android:textSize="17sp" android:layout_marginBottom="8dp"/>
+     <com.google.android.material.textview.MaterialTextView android:id="@+id/summaryText" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#B9B5B2" android:textSize="14sp"/>
     </LinearLayout>
-
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/mainScrollView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true"
-        android:clipToPadding="false"
-        android:paddingStart="18dp"
-        android:paddingEnd="18dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="12dp"
-        android:overScrollMode="never">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center_horizontal">
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <ImageView
-                android:layout_width="62dp"
-                android:layout_height="62dp"
-                android:layout_marginBottom="18dp"
-                android:contentDescription="CodeQiv AI"
-                android:src="@drawable/ic_ai_agent"
-                android:tint="#FF805E" />
-
-            <TextView
-                android:id="@+id/welcomeMessage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="28dp"
-                android:fontFamily="serif"
-                android:gravity="center"
-                android:lineSpacingExtra="5dp"
-                android:text="Evening, how can I help you today?"
-                android:textColor="#F7F4F1"
-                android:textSize="27sp" />
-
-            <LinearLayout
-                android:id="@+id/statusCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="8dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Status"
-                        android:textColor="#F4F0ED"
-                        android:textSize="18sp" />
-
-                    <com.google.android.material.progressindicator.CircularProgressIndicator
-                        android:id="@+id/progressIndicator"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:indeterminate="true"
-                        android:visibility="gone"
-                        app:indicatorSize="24dp"
-                        style="@style/Widget.Material3.CircularProgressIndicator" />
-                </LinearLayout>
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/statusText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Ready to assist you"
-                    android:textColor="#B9B5B2"
-                    android:textIsSelectable="true"
-                    android:textSize="14sp" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/fileModificationList"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:nestedScrollingEnabled="false"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:background="#343136" />
-
-            <LinearLayout
-                android:id="@+id/summaryCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingVertical="12dp"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Modification Summary"
-                    android:textColor="#F4F0ED"
-                    android:textSize="18sp"
-                    android:layout_marginBottom="8dp" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/summaryText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="#B9B5B2"
-                    android:textSize="14sp" />
-            </LinearLayout>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-
-    <LinearLayout
-        android:id="@+id/mainContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginStart="18dp"
-        android:layout_marginEnd="18dp"
-        android:layout_marginBottom="10dp"
-        android:padding="12dp"
-        android:background="@drawable/bg_codeqiv_chat_composer"
-        android:elevation="0dp">
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/promptLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Chat with CodeQiv AI..."
-            android:layout_marginBottom="8dp"
-            app:boxBackgroundMode="none"
-            app:startIconDrawable="@drawable/ic_ai"
-            app:startIconTint="#A9A4AD"
-            app:hintTextColor="#96919A">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/anyText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textCapSentences|textMultiLine"
-                android:minLines="1"
-                android:maxLines="4"
-                android:gravity="top|start"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:textColor="#F4F1F5"
-                android:textColorHint="#96919A"
-                android:textSize="16sp"
-                android:background="@android:color/transparent"
-                android:imeOptions="actionSend" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/clearBtn"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:layout_marginEnd="10dp"
-                android:minWidth="0dp"
-                android:padding="0dp"
-                android:contentDescription="Clear prompt"
-                android:text=""
-                app:icon="@drawable/ic_clear"
-                app:iconTint="#F2EDE8"
-                app:backgroundTint="#29272B"
-                app:cornerRadius="21dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/modelPickerButton"
-                android:layout_width="0dp"
-                android:layout_height="46dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="10dp"
-                android:text="AI Model  ▾"
-                android:textAllCaps="false"
-                android:textColor="#E9E5E1"
-                android:textSize="14sp"
-                app:backgroundTint="#29282B"
-                app:cornerRadius="24dp"
-                app:icon="@drawable/ic_ai"
-                app:iconTint="#D9D4D0" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/executeBtn"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:contentDescription="Send message"
-                android:text=""
-                app:icon="@drawable/ic_send"
-                app:iconTint="#121114"
-                app:backgroundTint="#F5F1EE"
-                app:cornerRadius="26dp"
-                app:iconSize="22dp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/chatBottomNavigation"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:paddingStart="22dp"
-        android:paddingEnd="22dp"
-        android:background="#08080A">
-
-        <ImageButton
-            android:id="@+id/navFiles"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Files"
-            android:src="@drawable/ic_folder"
-            android:tint="#77747B" />
-
-        <ImageButton
-            android:id="@+id/navAndroid"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Android tools"
-            android:src="@drawable/ic_ai_agent"
-            android:tint="#77747B" />
-
-        <ImageButton
-            android:id="@+id/navGit"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Git"
-            android:src="@drawable/ic_git"
-            android:tint="#77747B" />
-
-        <ImageButton
-            android:id="@+id/navAgent"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@drawable/bg_codeqiv_chat_chip"
-            android:contentDescription="AI agent"
-            android:src="@drawable/ic_ai_agent"
-            android:tint="#F2D6C7" />
-    </LinearLayout>
+   </LinearLayout>
+   <Space android:id="@+id/welcomeSpacerBottom" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"/>
+  </LinearLayout>
+ </androidx.core.widget.NestedScrollView>
+ <LinearLayout android:id="@+id/mainContainer" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginStart="18dp" android:layout_marginEnd="18dp" android:layout_marginBottom="8dp" android:padding="12dp" android:background="@drawable/bg_codeqiv_chat_composer" android:elevation="0dp">
+  <com.google.android.material.textfield.TextInputLayout android:id="@+id/promptLayout" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Chat with CodeQiv AI..." android:layout_marginBottom="8dp" app:boxBackgroundMode="none" app:hintTextColor="#96919A">
+   <com.google.android.material.textfield.TextInputEditText android:id="@+id/anyText" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textCapSentences|textMultiLine" android:minLines="1" android:maxLines="4" android:gravity="top|start" android:paddingTop="8dp" android:paddingBottom="8dp" android:textColor="#F4F1F5" android:textColorHint="#96919A" android:textSize="16sp" android:background="@android:color/transparent" android:imeOptions="actionSend"/>
+  </com.google.android.material.textfield.TextInputLayout>
+  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+   <com.google.android.material.button.MaterialButton android:id="@+id/clearBtn" android:layout_width="42dp" android:layout_height="42dp" android:layout_marginEnd="10dp" android:minWidth="0dp" android:padding="0dp" android:contentDescription="Add attachment or context" android:text="" app:icon="@drawable/ic_codeqiv_add" app:iconTint="#F2EDE8" app:backgroundTint="#29272B" app:cornerRadius="21dp"/>
+   <com.google.android.material.button.MaterialButton android:id="@+id/modelPickerButton" android:layout_width="0dp" android:layout_height="46dp" android:layout_weight="1" android:layout_marginEnd="10dp" android:text="AI Model  ▾" android:textAllCaps="false" android:textColor="#E9E5E1" android:textSize="14sp" app:backgroundTint="#29282B" app:cornerRadius="24dp" app:icon="@drawable/ic_ai" app:iconTint="#D9D4D0"/>
+   <com.google.android.material.button.MaterialButton android:id="@+id/executeBtn" android:layout_width="52dp" android:layout_height="52dp" android:minWidth="0dp" android:padding="0dp" android:contentDescription="Send message" android:text="" app:icon="@drawable/ic_send" app:iconTint="#121114" app:backgroundTint="#F5F1EE" app:cornerRadius="26dp" app:iconSize="22dp"/>
+  </LinearLayout>
+ </LinearLayout>
+ <LinearLayout android:id="@+id/chatBottomNavigation" android:layout_width="match_parent" android:layout_height="60dp" android:orientation="horizontal" android:gravity="center" android:paddingStart="22dp" android:paddingEnd="22dp" android:background="#08080A">
+  <ImageButton android:id="@+id/navFiles" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:background="?attr/selectableItemBackgroundBorderless" android:contentDescription="Files" android:src="@drawable/ic_folder" android:tint="#77747B"/>
+  <ImageButton android:id="@+id/navAndroid" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:background="?attr/selectableItemBackgroundBorderless" android:contentDescription="Android tools" android:src="@drawable/ic_ai_agent" android:tint="#77747B"/>
+  <ImageButton android:id="@+id/navGit" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:background="?attr/selectableItemBackgroundBorderless" android:contentDescription="Git" android:src="@drawable/ic_git" android:tint="#77747B"/>
+  <ImageButton android:id="@+id/navAgent" android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/bg_codeqiv_chat_chip" android:contentDescription="CodeQiv AI" android:src="@drawable/ic_codeqiv_ffx" android:scaleType="fitCenter" android:padding="8dp"/>
+ </LinearLayout>
 </LinearLayout>
