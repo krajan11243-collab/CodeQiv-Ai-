@@ -96,6 +96,7 @@
         </FrameLayout>
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/agentComposerCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -108,92 +109,112 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:padding="10dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/agentAttachButton"
-                    style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="52dp"
-                    android:layout_height="52dp"
-                    android:contentDescription="Add attachment"
-                    android:text="+"
-                    android:textSize="30sp"
-                    android:textColor="#FFFFFF"
-                    app:backgroundTint="#292929"
-                    app:cornerRadius="28dp" />
-
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/agent_dropdown_layout"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:hint="AI Model"
-                    app:boxBackgroundMode="filled"
-                    app:boxBackgroundColor="#292929"
-                    app:boxStrokeWidth="0dp"
-                    app:boxStrokeWidthFocused="0dp"
-                    app:boxCornerRadiusTopStart="24dp"
-                    app:boxCornerRadiusTopEnd="24dp"
-                    app:boxCornerRadiusBottomStart="24dp"
-                    app:boxCornerRadiusBottomEnd="24dp">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/agent_dropdown"
-                        android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:gravity="center_vertical"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="12dp"
-                        android:inputType="none"
-                        android:clickable="true"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        android:text="AI Model"
-                        android:textColor="#F5F5F5"
-                        android:textSize="14sp" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/agentVoiceButton"
-                    style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:contentDescription="Voice input"
-                    android:text="≋"
-                    android:textSize="28sp"
-                    android:textColor="#111111"
-                    app:backgroundTint="#FFFFFF"
-                    app:cornerRadius="30dp" />
-            </LinearLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_prompt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_prompt"
+                    android:id="@+id/til_prompt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Chat with CodeQiv AI..."
-                    android:inputType="textMultiLine|textCapSentences"
-                    android:maxLines="4" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    app:boxBackgroundMode="none"
+                    app:hintTextColor="#A8A8A8">
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/btn_send"
-                android:layout_width="1dp"
-                android:layout_height="1dp"
-                android:visibility="gone"
-                android:contentDescription="Send message"
-                android:src="@drawable/ic_send"
-                app:fabSize="mini" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_prompt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="46dp"
+                        android:maxHeight="120dp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:background="@android:color/transparent"
+                        android:gravity="top|start"
+                        android:inputType="textCapSentences|textMultiLine"
+                        android:maxLines="4"
+                        android:textColor="#F5F5F5"
+                        android:textColorHint="#929292"
+                        android:textSize="16sp"
+                        android:imeOptions="actionSend" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/agentAttachButton"
+                        style="@style/Widget.Material3.Button.IconButton"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:contentDescription="Add attachment"
+                        android:text="+"
+                        android:textSize="30sp"
+                        android:textColor="#FFFFFF"
+                        app:backgroundTint="#292929"
+                        app:cornerRadius="28dp" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/agent_dropdown_layout"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:hint="AI Model"
+                        app:boxBackgroundMode="filled"
+                        app:boxBackgroundColor="#292929"
+                        app:boxStrokeWidth="0dp"
+                        app:boxStrokeWidthFocused="0dp"
+                        app:boxCornerRadiusTopStart="24dp"
+                        app:boxCornerRadiusTopEnd="24dp"
+                        app:boxCornerRadiusBottomStart="24dp"
+                        app:boxCornerRadiusBottomEnd="24dp">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/agent_dropdown"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:gravity="center_vertical"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="12dp"
+                            android:inputType="none"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            android:text="AI Model"
+                            android:textColor="#F5F5F5"
+                            android:textSize="14sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/agentVoiceButton"
+                        style="@style/Widget.Material3.Button.IconButton"
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:contentDescription="Voice input"
+                        android:text="≋"
+                        android:textSize="28sp"
+                        android:textColor="#111111"
+                        app:backgroundTint="#FFFFFF"
+                        app:cornerRadius="30dp" />
+                </LinearLayout>
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/btn_send"
+                    android:layout_width="1dp"
+                    android:layout_height="1dp"
+                    android:visibility="gone"
+                    android:contentDescription="Send message"
+                    android:src="@drawable/ic_send"
+                    app:fabSize="mini" />
+            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
