@@ -329,11 +329,14 @@ class MainFragment : BaseFragment() {
         }
       } catch (error: Exception) {
         log.error("Failed to import selected project folder", error)
-        Toast.makeText(
-            context,
-            getString(string.codeqiv_import_failed, error.localizedMessage ?: error.javaClass.simpleName),
-            Toast.LENGTH_LONG,
-        ).show()
+        withContext(Dispatchers.IO) { destination.deleteRecursively() }
+        if (isAdded) {
+          Toast.makeText(
+              context,
+              getString(string.codeqiv_import_failed, error.localizedMessage ?: error.javaClass.simpleName),
+              Toast.LENGTH_LONG,
+          ).show()
+        }
       }
     }
   }
@@ -362,11 +365,14 @@ class MainFragment : BaseFragment() {
         }
       } catch (error: Exception) {
         log.error("Failed to import selected ZIP project", error)
-        Toast.makeText(
-            context,
-            getString(string.codeqiv_import_failed, error.localizedMessage ?: error.javaClass.simpleName),
-            Toast.LENGTH_LONG,
-        ).show()
+        withContext(Dispatchers.IO) { destination.deleteRecursively() }
+        if (isAdded) {
+          Toast.makeText(
+              context,
+              getString(string.codeqiv_import_failed, error.localizedMessage ?: error.javaClass.simpleName),
+              Toast.LENGTH_LONG,
+          ).show()
+        }
       }
     }
   }
@@ -384,10 +390,19 @@ class MainFragment : BaseFragment() {
   }
 
   private fun findImportedProjectRoot(destination: File): File? {
-    if (isValidAndroidProject(destination)) return destination
-    val children = destination.listFiles()?.filter { it.isDirectory }.orEmpty()
-    if (children.size == 1 && isValidAndroidProject(children.single())) return children.single()
-    return children.firstOrNull { isValidAndroidProject(it) }
+    fun search(directory: File, depth: Int): File? {
+      if (isValidAndroidProject(directory)) return directory
+      if (depth >= 4) return null
+
+      return directory.listFiles()
+          ?.asSequence()
+          ?.filter {
+            it.isDirectory && it.name !in setOf(".git", ".gradle", "build", "node_modules")
+          }
+          ?.mapNotNull { search(it, depth + 1) }
+          ?.firstOrNull()
+    }
+    return search(destination, 0)
   }
 
   private fun showProjectOptionsDialog(project: File, onActionComplete: () -> Unit) {
