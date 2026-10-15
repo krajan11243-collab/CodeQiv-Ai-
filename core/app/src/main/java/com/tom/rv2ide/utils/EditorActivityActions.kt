@@ -23,6 +23,7 @@ import com.tom.rv2ide.actions.ActionItem.Location.EDITOR_TOOLBAR
 import com.tom.rv2ide.actions.ActionsRegistry
 import com.tom.rv2ide.actions.build.ProjectSyncAction
 import com.tom.rv2ide.actions.build.QuickRunWithCancellationAction
+import com.tom.rv2ide.actions.etc.AIEditorToolbarAction
 import com.tom.rv2ide.actions.build.RunTasksAction
 import com.tom.rv2ide.actions.editor.CopyAction
 import com.tom.rv2ide.actions.editor.CutAction
@@ -33,6 +34,7 @@ import com.tom.rv2ide.actions.editor.PasteAction
 import com.tom.rv2ide.actions.editor.SelectAllAction
 import com.tom.rv2ide.actions.etc.DisconnectLogSendersAction
 import com.tom.rv2ide.actions.etc.FindActionMenu
+import com.tom.rv2ide.actions.etc.GitHubPushEditorAction
 import com.tom.rv2ide.actions.etc.ColorSchemeMenu
 import com.tom.rv2ide.actions.etc.IdeConfigurationsAction
 import com.tom.rv2ide.actions.etc.TextActionMenuAction
@@ -68,19 +70,22 @@ class EditorActivityActions {
       val registry = ActionsRegistry.getInstance()
       var order = 0
 
-      // Toolbar actions
+      // Keep the primary mobile toolbar actions first so Run, Search and AI stay visible.
+      registry.registerAction(QuickRunWithCancellationAction(context, order++))
+      registry.registerAction(FindActionMenu(context, order++))
+      registry.registerAction(GitHubPushEditorAction(context, order++))
+      registry.registerAction(AIEditorToolbarAction(context, order++))
+
+      // Remaining actions stay available in the toolbar overflow menu.
       registry.registerAction(UndoAction(context, order++))
       registry.registerAction(RedoAction(context, order++))
-      registry.registerAction(QuickRunWithCancellationAction(context, order++))
       registry.registerAction(ColorSchemeMenu(context, order++))
-      
       registry.registerAction(RunTasksAction(context, order++))
       registry.registerAction(TextActionMenuAction(context, order++))
       registry.registerAction(SaveFileAction(context, order++))
       registry.registerAction(PreviewLayoutAction(context, order++))
-      registry.registerAction(FindActionMenu(context, order++))
       registry.registerAction(ProjectSyncAction(context, order++))
-      
+
       // registry.registerAction(ReloadColorSchemesAction(context, order++))
       registry.registerAction(DisconnectLogSendersAction(context, order++))
       registry.registerAction(LaunchAppAction(context, order++))

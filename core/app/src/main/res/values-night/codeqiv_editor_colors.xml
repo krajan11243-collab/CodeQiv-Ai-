@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="codeqiv_editor_surface">#080B12</color>
+  <color name="codeqiv_editor_selected_text">#F4F5FF</color>
+  <color name="codeqiv_editor_unselected_text">#9CA3B8</color>
+  <color name="codeqiv_editor_accent">#8B5CF6</color>
+</resources>

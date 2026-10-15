@@ -118,6 +118,7 @@ import com.tom.rv2ide.xml.resources.ResourceTableRegistry
 import com.tom.rv2ide.xml.versions.ApiVersionsRegistry
 import com.tom.rv2ide.xml.widgets.WidgetTableRegistry
 import com.tom.rv2ide.setup.Setup
+import com.tom.rv2ide.utils.EditorActivityActions
 import com.tom.rv2ide.experimental.depsupdater.DependencyUpdaterDialog
 import com.tom.rv2ide.preferences.internal.BuildPreferences.isKtIndexingNotificationEnabled
 import java.io.File
@@ -688,6 +689,8 @@ override fun onApplySystemBarInsets(insets: Insets) {
     this.optionsMenuInvalidator = Runnable { super.invalidateOptionsMenu() }
 
     registerLanguageServers(this)
+    // Register editor toolbar, file-tab, file-tree and sidebar actions before menus are created.
+    EditorActivityActions.register(this)
 
     if (savedInstanceState != null && savedInstanceState.containsKey(KEY_PROJECT_PATH)) {
       IProjectManager.getInstance().openProject(savedInstanceState.getString(KEY_PROJECT_PATH)!!)

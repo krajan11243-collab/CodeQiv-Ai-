@@ -6,14 +6,14 @@
   android:id="@+id/coordinator"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:background="#080B12"
   app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
-
 
   <com.google.android.material.imageview.ShapeableImageView
     android:id="@+id/main_image"
-    android:layout_width="80dp"
-    android:layout_height="80dp"
-    android:layout_marginTop="10dp"
+    android:layout_width="68dp"
+    android:layout_height="68dp"
+    android:layout_marginTop="18dp"
     android:src="@drawable/ic_acs"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
@@ -24,9 +24,11 @@
     android:id="@+id/getStarted"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="@string/get_started"
     android:layout_marginTop="10dp"
-    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+    android:text="CodeQiv"
+    android:textColor="#F4F5FF"
+    android:textSize="25sp"
+    android:fontFamily="sans"
     android:textStyle="bold"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
@@ -34,11 +36,15 @@
 
   <TextView
     android:id="@+id/greetingText"
-    android:layout_width="wrap_content"
+    android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="4dp"
-    android:text="@string/msg_create_new_project_greeting"
-    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+    android:layout_marginStart="24dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginEnd="24dp"
+    android:gravity="center"
+    android:text="Your mobile coding workspace"
+    android:textColor="#9CA3B8"
+    android:textSize="14sp"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@id/getStarted" />
@@ -47,13 +53,15 @@
     android:id="@+id/actions"
     android:layout_width="0dp"
     android:layout_height="0dp"
-    android:layout_marginTop="16dp"
+    android:layout_marginStart="18dp"
+    android:layout_marginTop="20dp"
+    android:layout_marginEnd="18dp"
     android:layout_marginBottom="16dp"
     app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="@id/greetingText"
-    app:layout_constraintStart_toStartOf="@id/greetingText"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@id/greetingText"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
     tools:listitem="@layout/layout_main_action_item" />
-    
+
 </androidx.constraintlayout.widget.ConstraintLayout>

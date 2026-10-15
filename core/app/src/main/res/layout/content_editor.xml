@@ -21,7 +21,7 @@
         android:id="@+id/editor_appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
+        android:background="@color/codeqiv_editor_surface"
         android:fitsSystemWindows="false"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
 
@@ -29,6 +29,7 @@
           android:id="@+id/editor_toolbar"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:background="@color/codeqiv_editor_surface"
           android:elevation="10dp" />
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
@@ -44,7 +45,13 @@
           style="@style/AppTheme.TabLayout"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          app:tabGravity="start" />
+          android:background="@color/codeqiv_editor_surface"
+          app:tabGravity="start"
+          app:tabMode="scrollable"
+          app:tabIndicatorHeight="3dp"
+          app:tabIndicatorColor="@color/codeqiv_editor_accent"
+          app:tabSelectedTextColor="@color/codeqiv_editor_selected_text"
+          app:tabTextColor="@color/codeqiv_editor_unselected_text" />
 
       </com.google.android.material.appbar.AppBarLayout>
 

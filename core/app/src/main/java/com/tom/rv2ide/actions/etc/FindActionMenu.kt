@@ -18,12 +18,19 @@
 package com.tom.rv2ide.actions.etc
 
 import android.content.Context
+import android.view.MenuItem
+import android.view.View
+import android.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import com.tom.rv2ide.actions.ActionData
+import com.tom.rv2ide.actions.ActionsRegistry
+import com.tom.rv2ide.actions.getContext
+import com.tom.rv2ide.actions.internal.DefaultActionsRegistry
 import com.tom.rv2ide.actions.ActionItem
 import com.tom.rv2ide.actions.ActionMenu
 import com.tom.rv2ide.actions.EditorActivityAction
 import com.tom.rv2ide.resources.R
+import com.tom.rv2ide.utils.EditorToolbarActionView
 
 /** @author Akash Yadav */
 class FindActionMenu(context: Context, override val order: Int) :
@@ -38,6 +45,33 @@ class FindActionMenu(context: Context, override val order: Int) :
 
     addAction(FindInFileAction(context, 0))
     addAction(FindInProjectAction(context, 1))
+  }
+
+  override fun getShowAsActionFlags(data: ActionData): Int =
+      MenuItem.SHOW_AS_ACTION_ALWAYS
+
+  override fun createActionView(data: ActionData): View? {
+    val context = data.getContext() ?: return null
+    return EditorToolbarActionView(context).apply {
+      setLabel("Search")
+      setIcon(icon, createColorFilter(data))
+      setOnClickListener {
+        PopupMenu(context, this).apply {
+          children.sortedBy { child -> child.order }.forEach { child ->
+            val entry = menu.add(0, child.itemId, child.order, child.label)
+            child.icon?.let { drawable ->
+              entry.icon =
+                  drawable.constantState?.newDrawable(context.resources)?.mutate()
+                      ?: drawable.mutate()
+            }
+            entry.setOnMenuItemClickListener {
+              (ActionsRegistry.getInstance() as? DefaultActionsRegistry)?.executeAction(child, data)
+              true
+            }
+          }
+        }.show()
+      }
+    }
   }
 
   override fun prepare(data: ActionData) {

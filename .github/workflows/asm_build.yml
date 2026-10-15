@@ -1,5 +1,14 @@
 name: Build Android Code Studio
 
+# Keep only the newest build for this PR/branch running.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: write
+
 on:
   push:
     branches: 
@@ -60,7 +69,10 @@ jobs:
           distribution: 'adopt'
 
       - name: Generating missing dirs
-        run: mkdir -p /home/runner/work/android-code-studio/android-code-studio/core/app/build/intermediates/external_file_lib_dex_archives/debug/desugarDebugFileDependencies && mkdir -p /home/runner/work/android-code-studio/android-code-studio/core/app/build/intermediates/l8_art_profile/release/l8DexDesugarLibRelease
+        # Use the checked-out repository path; the workflow is also used from forks.
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/core/app/build/intermediates/external_file_lib_dex_archives/debug/desugarDebugFileDependencies"
+          mkdir -p "$GITHUB_WORKSPACE/core/app/build/intermediates/l8_art_profile/release/l8DexDesugarLibRelease"
 
       - name: Change Gradle wrapper permissions
         run: chmod +x ./gradlew

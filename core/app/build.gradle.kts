@@ -96,8 +96,10 @@ android {
   }
 
   buildTypes {
+    // Debug builds use the standard Android debug key so CI can build installable APKs
+    // without depending on the private release keystore or its secrets.
     debug {
-      signingConfig = signingConfigs.getByName("custom")
+      signingConfig = signingConfigs.getByName("debug")
     }
 
     release {
@@ -229,6 +231,7 @@ dependencies {
   implementation(libs.git.jgit)
 
   // AndroidX
+  implementation("androidx.documentfile:documentfile:1.0.1")
   implementation(libs.androidx.splashscreen)
   implementation(libs.androidx.annotation)
   implementation(libs.androidx.appcompat)

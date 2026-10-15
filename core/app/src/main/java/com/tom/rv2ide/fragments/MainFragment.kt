@@ -18,12 +18,17 @@
 package com.tom.rv2ide.fragments
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.documentfile.provider.DocumentFile
+import androidx.lifecycle.lifecycleScope
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -48,9 +53,11 @@ import com.tom.rv2ide.models.MainScreenAction
 import com.tom.rv2ide.resources.R.string
 import com.tom.rv2ide.tasks.runOnUiThread
 import com.tom.rv2ide.templates.preferences.WizardPreferences
+import com.tom.rv2ide.utils.CodeQivProjectImporter
 import com.tom.rv2ide.utils.DialogUtils
 import com.tom.rv2ide.utils.Environment
 import com.tom.rv2ide.utils.GeneralFileUtils
+import com.tom.rv2ide.utils.GitHubAccountManager
 import com.tom.rv2ide.utils.flashError
 import com.tom.rv2ide.utils.flashSuccess
 import com.tom.rv2ide.viewmodel.MainViewModel
@@ -77,6 +84,16 @@ class MainFragment : BaseFragment() {
 
   private val viewModel by viewModels<MainViewModel>(ownerProducer = { requireActivity() })
   private var binding: FragmentMainBinding? = null
+
+  private val importFolderLauncher =
+      registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+        if (uri != null) importProjectFolder(uri)
+      }
+
+  private val importZipLauncher =
+      registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) importProjectZip(uri)
+      }
 
   companion object {
     private val log = LoggerFactory.getLogger(MainFragment::class.java)
@@ -112,6 +129,10 @@ class MainFragment : BaseFragment() {
             when (action.id) {
               MainScreenAction.ACTION_CREATE_PROJECT -> showCreateProject()
               MainScreenAction.ACTION_OPEN_PROJECT -> showProjectsBottomSheet()
+              MainScreenAction.ACTION_GITHUB_CONNECT -> showGitHubConnectDialog()
+              MainScreenAction.ACTION_IMPORT_FOLDER -> importFolderLauncher.launch(null)
+              MainScreenAction.ACTION_IMPORT_ZIP ->
+                  importZipLauncher.launch(arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
               MainScreenAction.ACTION_CLONE_REPO -> showGitCloneBottomSheet()
               MainScreenAction.ACTION_OPEN_TERMINAL ->
                   startActivity(Intent(requireActivity(), TerminalActivity::class.java))
@@ -147,6 +168,85 @@ class MainFragment : BaseFragment() {
     super.onDestroyView()
     binding = null
   }
+
+  /**
+   * Connects a GitHub account using a personal access token. GitHub validates the token
+   * before it is stored in AndroidX encrypted preferences.
+   */
+  private fun showGitHubConnectDialog() {
+    val context = requireContext()
+    val connectedUser = GitHubAccountManager.getConnectedAccount(context)
+    if (connectedUser != null) {
+      AlertDialog.Builder(context)
+          .setTitle("GitHub connected")
+          .setMessage("Connected as @$connectedUser. The access token is stored encrypted on this device.")
+          .setNegativeButton("Close", null)
+          .setPositiveButton("Disconnect") { _, _ ->
+            GitHubAccountManager.disconnect(context)
+            Toast.makeText(context, "GitHub account disconnected.", Toast.LENGTH_SHORT).show()
+          }
+          .show()
+      return
+    }
+
+    val inputLayout = TextInputLayout(context).apply {
+      hint = "GitHub personal access token"
+      boxBackgroundMode = TextInputLayout.BOX_BACKGROUND_OUTLINE
+      setPadding(dp(20), dp(8), dp(20), dp(4))
+    }
+    val tokenInput = TextInputEditText(inputLayout.context).apply {
+      inputType = android.text.InputType.TYPE_CLASS_TEXT or
+          android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+      setSingleLine(true)
+      setTextIsSelectable(false)
+      hint = "github_pat_…"
+    }
+    inputLayout.addView(
+        tokenInput,
+        ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT),
+    )
+
+    val dialog = AlertDialog.Builder(context)
+        .setTitle("Connect GitHub")
+        .setMessage("Paste a GitHub personal access token. CodeQiv validates it with GitHub and stores it encrypted on this device.")
+        .setView(inputLayout)
+        .setNegativeButton("Cancel", null)
+        .setPositiveButton("Connect", null)
+        .create()
+
+    dialog.setOnShowListener {
+      dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+        val token = tokenInput.text?.toString()?.trim().orEmpty()
+        if (token.isBlank()) {
+          inputLayout.error = "Enter your GitHub token"
+          return@setOnClickListener
+        }
+        inputLayout.error = null
+        val button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+        button.isEnabled = false
+        button.text = "Checking…"
+        viewLifecycleOwner.lifecycleScope.launch {
+          try {
+            val username = withContext(Dispatchers.IO) {
+              GitHubAccountManager.connect(context, token)
+            }
+            if (isAdded) {
+              dialog.dismiss()
+              Toast.makeText(context, "GitHub connected as @$username", Toast.LENGTH_LONG).show()
+            }
+          } catch (error: Exception) {
+            inputLayout.error = error.message ?: "Could not connect to GitHub"
+            button.isEnabled = true
+            button.text = "Connect"
+          }
+        }
+      }
+    }
+    dialog.show()
+  }
+
+  private fun dp(value: Int): Int =
+      (value * resources.displayMetrics.density + 0.5f).toInt()
 
   private fun showProjectsBottomSheet() {
     val bottomSheet = BottomSheetDialog(requireContext())
@@ -281,6 +381,109 @@ class MainFragment : BaseFragment() {
 
     bottomSheet.setContentView(sheetView)
     bottomSheet.show()
+  }
+
+
+  /** Import a folder selected through Android's Storage Access Framework. */
+  private fun importProjectFolder(uri: Uri) {
+    val context = requireContext()
+    val selected = DocumentFile.fromTreeUri(context, uri)
+    val rawName = selected?.name?.takeIf { it.isNotBlank() } ?: "ImportedProject"
+    val destination = createImportDestination(rawName)
+    Toast.makeText(context, getString(string.codeqiv_importing_project), Toast.LENGTH_SHORT).show()
+
+    viewLifecycleOwner.lifecycleScope.launch {
+      try {
+        withContext(Dispatchers.IO) {
+          CodeQivProjectImporter.importFolder(context, uri, destination)
+        }
+        val projectRoot = findImportedProjectRoot(destination)
+        if (projectRoot != null) {
+          Toast.makeText(context, getString(string.codeqiv_import_complete), Toast.LENGTH_SHORT).show()
+          openProject(projectRoot)
+        } else {
+          Toast.makeText(
+              context,
+              "Folder copied, but no Gradle Android project was found. Check build.gradle(.kts) and gradle/wrapper/gradle-wrapper.properties.",
+              Toast.LENGTH_LONG,
+          ).show()
+        }
+      } catch (error: Exception) {
+        log.error("Failed to import selected project folder", error)
+        withContext(Dispatchers.IO) { destination.deleteRecursively() }
+        if (isAdded) {
+          Toast.makeText(
+              context,
+              getString(string.codeqiv_import_failed, error.localizedMessage ?: error.javaClass.simpleName),
+              Toast.LENGTH_LONG,
+          ).show()
+        }
+      }
+    }
+  }
+
+  /** Extract a ZIP archive safely, then open its Gradle project root. */
+  private fun importProjectZip(uri: Uri) {
+    val context = requireContext()
+    val destination = createImportDestination("ImportedProject")
+    Toast.makeText(context, getString(string.codeqiv_importing_project), Toast.LENGTH_SHORT).show()
+
+    viewLifecycleOwner.lifecycleScope.launch {
+      try {
+        withContext(Dispatchers.IO) {
+          CodeQivProjectImporter.importZip(context, uri, destination)
+        }
+        val projectRoot = findImportedProjectRoot(destination)
+        if (projectRoot != null) {
+          Toast.makeText(context, getString(string.codeqiv_import_complete), Toast.LENGTH_SHORT).show()
+          openProject(projectRoot)
+        } else {
+          Toast.makeText(
+              context,
+              "ZIP extracted, but no Gradle Android project was found. Check the archive contents.",
+              Toast.LENGTH_LONG,
+          ).show()
+        }
+      } catch (error: Exception) {
+        log.error("Failed to import selected ZIP project", error)
+        withContext(Dispatchers.IO) { destination.deleteRecursively() }
+        if (isAdded) {
+          Toast.makeText(
+              context,
+              getString(string.codeqiv_import_failed, error.localizedMessage ?: error.javaClass.simpleName),
+              Toast.LENGTH_LONG,
+          ).show()
+        }
+      }
+    }
+  }
+
+  private fun createImportDestination(suggestedName: String): File {
+    val safeName = suggestedName.replace(Regex("[^A-Za-z0-9._ -]"), "_")
+        .trim()
+        .trim('.')
+        .ifBlank { "ImportedProject" }
+    var destination = File(Environment.PROJECTS_DIR, safeName)
+    if (destination.exists()) {
+      destination = File(Environment.PROJECTS_DIR, safeName + "_" + System.currentTimeMillis())
+    }
+    return destination
+  }
+
+  private fun findImportedProjectRoot(destination: File): File? {
+    fun search(directory: File, depth: Int): File? {
+      if (isValidAndroidProject(directory)) return directory
+      if (depth >= 4) return null
+
+      return directory.listFiles()
+          ?.asSequence()
+          ?.filter {
+            it.isDirectory && it.name !in setOf(".git", ".gradle", "build", "node_modules")
+          }
+          ?.mapNotNull { search(it, depth + 1) }
+          ?.firstOrNull()
+    }
+    return search(destination, 0)
   }
 
   private fun showProjectOptionsDialog(project: File, onActionComplete: () -> Unit) {
