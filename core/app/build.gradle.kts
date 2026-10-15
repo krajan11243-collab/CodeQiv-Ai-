@@ -229,6 +229,7 @@ dependencies {
   implementation(libs.git.jgit)
 
   // AndroidX
+  implementation("androidx.documentfile:documentfile:1.0.1")
   implementation(libs.androidx.splashscreen)
   implementation(libs.androidx.annotation)
   implementation(libs.androidx.appcompat)
