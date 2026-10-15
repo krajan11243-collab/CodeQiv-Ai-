@@ -47,6 +47,8 @@
           android:layout_height="wrap_content"
           android:background="@color/codeqiv_editor_surface"
           app:tabGravity="start"
+          app:tabMode="scrollable"
+          app:tabIndicatorHeight="3dp"
           app:tabIndicatorColor="@color/codeqiv_editor_accent"
           app:tabSelectedTextColor="@color/codeqiv_editor_selected_text"
           app:tabTextColor="@color/codeqiv_editor_unselected_text" />

@@ -232,10 +232,10 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
               alpha = if (action.enabled) 255 else 76
             }
 
-        (item.actionView as? EditorToolbarActionView)?.setIcon(
-            action.icon,
-            action.createColorFilter(data),
-        )
+        (item.actionView as? EditorToolbarActionView)?.apply {
+          setIcon(action.icon, action.createColorFilter(data))
+          isEnabled = action.enabled
+        }
 
         val primaryMobileAction =
             action.id == "ide.editor.build.quickRun" ||
