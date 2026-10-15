@@ -38,7 +38,7 @@ object GeneralPreferences {
   const val NO_OPENED_PROJECT = "<NO_OPENED_PROJECT>"
 
   var uiMode: Int
-    get() = prefManager.getInt(UI_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+    get() = prefManager.getInt(UI_MODE, AppCompatDelegate.MODE_NIGHT_YES)
     set(value) {
       prefManager.putInt(UI_MODE, value)
     }
