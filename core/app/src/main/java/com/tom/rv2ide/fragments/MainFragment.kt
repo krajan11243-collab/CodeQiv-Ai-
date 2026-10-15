@@ -18,12 +18,17 @@
 package com.tom.rv2ide.fragments
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.documentfile.provider.DocumentFile
+import androidx.lifecycle.lifecycleScope
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -48,6 +53,7 @@ import com.tom.rv2ide.models.MainScreenAction
 import com.tom.rv2ide.resources.R.string
 import com.tom.rv2ide.tasks.runOnUiThread
 import com.tom.rv2ide.templates.preferences.WizardPreferences
+import com.tom.rv2ide.utils.CodeQivProjectImporter
 import com.tom.rv2ide.utils.DialogUtils
 import com.tom.rv2ide.utils.Environment
 import com.tom.rv2ide.utils.GeneralFileUtils
@@ -77,6 +83,16 @@ class MainFragment : BaseFragment() {
 
   private val viewModel by viewModels<MainViewModel>(ownerProducer = { requireActivity() })
   private var binding: FragmentMainBinding? = null
+
+  private val importFolderLauncher =
+      registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+        if (uri != null) importProjectFolder(uri)
+      }
+
+  private val importZipLauncher =
+      registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) importProjectZip(uri)
+      }
 
   companion object {
     private val log = LoggerFactory.getLogger(MainFragment::class.java)
@@ -112,6 +128,9 @@ class MainFragment : BaseFragment() {
             when (action.id) {
               MainScreenAction.ACTION_CREATE_PROJECT -> showCreateProject()
               MainScreenAction.ACTION_OPEN_PROJECT -> showProjectsBottomSheet()
+              MainScreenAction.ACTION_IMPORT_FOLDER -> importFolderLauncher.launch(null)
+              MainScreenAction.ACTION_IMPORT_ZIP ->
+                  importZipLauncher.launch(arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
               MainScreenAction.ACTION_CLONE_REPO -> showGitCloneBottomSheet()
               MainScreenAction.ACTION_OPEN_TERMINAL ->
                   startActivity(Intent(requireActivity(), TerminalActivity::class.java))
