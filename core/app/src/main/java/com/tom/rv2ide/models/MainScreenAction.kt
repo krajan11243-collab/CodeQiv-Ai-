@@ -24,9 +24,7 @@ import com.tom.rv2ide.resources.R
 import java.util.Collections
 
 /**
- * An action button shown on the main screen.
- *
- * @author Akash Yadav
+ * An action button shown on the CodeQiv home screen.
  */
 data class MainScreenAction
 @JvmOverloads
@@ -37,9 +35,7 @@ constructor(
     var onClick: ((MainScreenAction, View) -> Unit)? = null,
     var onLongClick: ((MainScreenAction, View) -> Boolean)? = null,
 ) {
-
   companion object {
-
     const val ACTION_CREATE_PROJECT = 0
     const val ACTION_OPEN_PROJECT = 1
     const val ACTION_CLONE_REPO = 2
@@ -48,38 +44,32 @@ constructor(
     const val ACTION_DONATE = 5
     const val ACTION_DOCS = 6
 
-    /** Get all main screen actions. */
+    /** Home priority follows the CodeQiv product flow: open first, create second. */
     @JvmStatic
     fun all(): List<MainScreenAction> {
       return mutableListOf<MainScreenAction>().apply {
-        val createProject =
-            MainScreenAction(ACTION_CREATE_PROJECT, R.string.create_project, R.drawable.ic_add)
-
         val openProject =
             MainScreenAction(
                 ACTION_OPEN_PROJECT,
                 R.string.msg_open_existing_project,
                 R.drawable.ic_folder,
             )
-
+        val createProject =
+            MainScreenAction(ACTION_CREATE_PROJECT, R.string.create_project, R.drawable.ic_add)
         val cloneGitRepository =
             MainScreenAction(ACTION_CLONE_REPO, R.string.git_clone_repo, R.drawable.ic_git)
-
         val openTerminal =
             MainScreenAction(ACTION_OPEN_TERMINAL, R.string.title_terminal, R.drawable.ic_terminal)
-
         val preferences =
             MainScreenAction(ACTION_PREFERENCES, R.string.msg_preferences, R.drawable.ic_settings)
-
         val donate = MainScreenAction(ACTION_DONATE, R.string.btn_idecfg, R.drawable.ic_cfg_main)
-
         val docs = MainScreenAction(ACTION_DOCS, R.string.btn_docs, R.drawable.ic_docs)
 
         Collections.addAll(
             this,
-            createProject,
             openProject,
             cloneGitRepository,
+            createProject,
             openTerminal,
             preferences,
             donate,
