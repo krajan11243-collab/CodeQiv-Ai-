@@ -15,7 +15,6 @@ import com.tom.rv2ide.R
 import com.tom.rv2ide.actions.ActionData
 import com.tom.rv2ide.actions.ActionsRegistry
 import com.tom.rv2ide.actions.EditorActivityAction
-import com.tom.rv2ide.actions.getActivity
 import com.tom.rv2ide.actions.getContext
 import com.tom.rv2ide.actions.internal.DefaultActionsRegistry
 import com.tom.rv2ide.actions.sidebar.AIAgentSidebarAction
