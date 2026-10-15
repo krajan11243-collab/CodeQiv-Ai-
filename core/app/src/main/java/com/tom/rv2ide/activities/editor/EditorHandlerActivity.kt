@@ -240,6 +240,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
         val primaryMobileAction =
             action.id == "ide.editor.build.quickRun" ||
                 action.id == "ide.editor.find" ||
+                action.id == "ide.editor.github.push" ||
                 action.id == "ide.editor.toolbar.ai"
         val showAsAction =
             if (primaryMobileAction) MenuItem.SHOW_AS_ACTION_ALWAYS

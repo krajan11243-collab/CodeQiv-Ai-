@@ -34,6 +34,7 @@ import com.tom.rv2ide.actions.editor.PasteAction
 import com.tom.rv2ide.actions.editor.SelectAllAction
 import com.tom.rv2ide.actions.etc.DisconnectLogSendersAction
 import com.tom.rv2ide.actions.etc.FindActionMenu
+import com.tom.rv2ide.actions.etc.GitHubPushEditorAction
 import com.tom.rv2ide.actions.etc.ColorSchemeMenu
 import com.tom.rv2ide.actions.etc.IdeConfigurationsAction
 import com.tom.rv2ide.actions.etc.TextActionMenuAction
@@ -72,6 +73,7 @@ class EditorActivityActions {
       // Keep the primary mobile toolbar actions first so Run, Search and AI stay visible.
       registry.registerAction(QuickRunWithCancellationAction(context, order++))
       registry.registerAction(FindActionMenu(context, order++))
+      registry.registerAction(GitHubPushEditorAction(context, order++))
       registry.registerAction(AIEditorToolbarAction(context, order++))
 
       // Remaining actions stay available in the toolbar overflow menu.
