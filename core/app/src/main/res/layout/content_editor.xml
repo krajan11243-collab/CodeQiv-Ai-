@@ -21,7 +21,7 @@
         android:id="@+id/editor_appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
+        android:background="#080B12"
         android:fitsSystemWindows="false"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
 
@@ -29,6 +29,7 @@
           android:id="@+id/editor_toolbar"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:background="#080B12"
           android:elevation="10dp" />
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
@@ -44,7 +45,11 @@
           style="@style/AppTheme.TabLayout"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          app:tabGravity="start" />
+          android:background="#080B12"
+          app:tabGravity="start"
+          app:tabIndicatorColor="#8B5CF6"
+          app:tabSelectedTextColor="#F4F5FF"
+          app:tabTextColor="#9CA3B8" />
 
       </com.google.android.material.appbar.AppBarLayout>
 
