@@ -58,7 +58,7 @@ class FindActionMenu(context: Context, override val order: Int) :
       setOnClickListener {
         PopupMenu(context, this).apply {
           children.sortedBy { child -> child.order }.forEach { child ->
-            val entry = menu.add(MenuItem.NONE, child.itemId, child.order, child.label)
+            val entry = menu.add(0, child.itemId, child.order, child.label)
             child.icon?.let { drawable ->
               entry.icon =
                   drawable.constantState?.newDrawable(context.resources)?.mutate()
