@@ -43,8 +43,10 @@ constructor(
     const val ACTION_PREFERENCES = 4
     const val ACTION_DONATE = 5
     const val ACTION_DOCS = 6
+    const val ACTION_IMPORT_FOLDER = 7
+    const val ACTION_IMPORT_ZIP = 8
 
-    /** Home priority follows the CodeQiv product flow: open first, create second. */
+    /** Home priority follows the CodeQiv product flow: open/import first. */
     @JvmStatic
     fun all(): List<MainScreenAction> {
       return mutableListOf<MainScreenAction>().apply {
@@ -54,10 +56,22 @@ constructor(
                 R.string.msg_open_existing_project,
                 R.drawable.ic_folder,
             )
-        val createProject =
-            MainScreenAction(ACTION_CREATE_PROJECT, R.string.create_project, R.drawable.ic_add)
+        val importFolder =
+            MainScreenAction(
+                ACTION_IMPORT_FOLDER,
+                R.string.codeqiv_import_folder,
+                R.drawable.ic_folder,
+            )
+        val importZip =
+            MainScreenAction(
+                ACTION_IMPORT_ZIP,
+                R.string.codeqiv_import_zip,
+                com.tom.rv2ide.R.drawable.ic_file_archive,
+            )
         val cloneGitRepository =
             MainScreenAction(ACTION_CLONE_REPO, R.string.git_clone_repo, R.drawable.ic_git)
+        val createProject =
+            MainScreenAction(ACTION_CREATE_PROJECT, R.string.create_project, R.drawable.ic_add)
         val openTerminal =
             MainScreenAction(ACTION_OPEN_TERMINAL, R.string.title_terminal, R.drawable.ic_terminal)
         val preferences =
@@ -68,6 +82,8 @@ constructor(
         Collections.addAll(
             this,
             openProject,
+            importFolder,
+            importZip,
             cloneGitRepository,
             createProject,
             openTerminal,
