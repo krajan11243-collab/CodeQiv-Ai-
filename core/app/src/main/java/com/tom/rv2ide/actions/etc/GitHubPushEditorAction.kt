@@ -135,6 +135,7 @@ class GitHubPushEditorAction(context: Context, override val order: Int) : Editor
   private fun pushProject(root: File, remoteUrl: String, message: String, username: String, token: String) {
     require(root.isDirectory) { "The open project folder is unavailable." }
     val git = if (File(root, ".git").exists()) Git.open(root) else Git.init().setDirectory(root).call()
+    ensureSafeGitIgnore(root)
     git.use { repository ->
       val config = repository.repository.config
       config.setString("remote", "origin", "url", remoteUrl.removeSuffix("/"))
@@ -151,6 +152,34 @@ class GitHubPushEditorAction(context: Context, override val order: Int) : Editor
           .setRefSpecs(RefSpec("HEAD:refs/heads/$branch"))
           .setCredentialsProvider(UsernamePasswordCredentialsProvider(username, token))
           .call()
+    }
+  }
+
+  /**
+   * Avoid accidentally publishing local credentials, signing keys, build output or IDE caches
+   * when pushing an imported project that did not include a .gitignore file.
+   */
+  private fun ensureSafeGitIgnore(root: File) {
+    val ignore = File(root, ".gitignore")
+    val safePatterns = listOf(
+        ".gradle/",
+        "**/build/",
+        "local.properties",
+        "*.jks",
+        "*.keystore",
+        ".idea/",
+        "captures/",
+        "*.apk",
+        "*.aab",
+    )
+    val existing = if (ignore.isFile) ignore.readLines() else emptyList()
+    val missing = safePatterns.filterNot { pattern -> existing.any { it.trim() == pattern } }
+    if (missing.isNotEmpty()) {
+      ignore.appendText(
+          (if (ignore.exists() && ignore.length() > 0) "\n" else "") +
+              "# CodeQiv safety defaults: keep local secrets and generated output out of Git\n" +
+              missing.joinToString("\n") + "\n",
+      )
     }
   }
 
