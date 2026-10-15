@@ -60,6 +60,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Generating missing dirs
+        # Use the checked-out repository path; the workflow is also used from forks.
         run: |
           mkdir -p "$GITHUB_WORKSPACE/core/app/build/intermediates/external_file_lib_dex_archives/debug/desugarDebugFileDependencies"
           mkdir -p "$GITHUB_WORKSPACE/core/app/build/intermediates/l8_art_profile/release/l8DexDesugarLibRelease"
