@@ -688,6 +688,9 @@ override fun onApplySystemBarInsets(insets: Insets) {
     this.optionsMenuInvalidator = Runnable { super.invalidateOptionsMenu() }
 
     registerLanguageServers(this)
+    // Register editor toolbar, file-tab, file-tree and sidebar actions before menus are created.
+    EditorActivityActions.register(this)
+    EditorSidebarActions.registerActions(this)
 
     if (savedInstanceState != null && savedInstanceState.containsKey(KEY_PROJECT_PATH)) {
       IProjectManager.getInstance().openProject(savedInstanceState.getString(KEY_PROJECT_PATH)!!)
