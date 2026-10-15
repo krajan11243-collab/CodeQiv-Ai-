@@ -197,7 +197,7 @@ class MainFragment : BaseFragment() {
     val tokenInput = TextInputEditText(inputLayout.context).apply {
       inputType = android.text.InputType.TYPE_CLASS_TEXT or
           android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
-      singleLine = true
+      setSingleLine(true)
       setTextIsSelectable(false)
       hint = "github_pat_…"
     }
