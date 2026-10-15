@@ -67,8 +67,11 @@ internal object EditorSidebarActions {
     val registry = ActionsRegistry.getInstance()
     val actions = registry.getActions(ActionItem.Location.EDITOR_SIDEBAR)
     if (actions.isEmpty()) {
-      return
+      // The sidebar fragment can be created before the editor activity registers its actions.
+      // Register lazily here so the navigation rail is never left empty.
+      registerActions(context)
     }
+    if (actions.isEmpty()) return
 
     val data = ActionData()
     data.put(Context::class.java, context)
