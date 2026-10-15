@@ -283,6 +283,94 @@ class MainFragment : BaseFragment() {
     bottomSheet.show()
   }
 
+
+  /** Import a folder selected through Android's Storage Access Framework. */
+  private fun importProjectFolder(uri: Uri) {
+    val context = requireContext()
+    val selected = DocumentFile.fromTreeUri(context, uri)
+    val rawName = selected?.name?.takeIf { it.isNotBlank() } ?: "ImportedProject"
+    val destination = createImportDestination(rawName)
+    Toast.makeText(context, getString(string.codeqiv_importing_project), Toast.LENGTH_SHORT).show()
+
+    viewLifecycleOwner.lifecycleScope.launch {
+      try {
+        withContext(Dispatchers.IO) {
+          CodeQivProjectImporter.importFolder(context, uri, destination)
+        }
+        val projectRoot = findImportedProjectRoot(destination)
+        if (projectRoot != null) {
+          Toast.makeText(context, getString(string.codeqiv_import_complete), Toast.LENGTH_SHORT).show()
+          openProject(projectRoot)
+        } else {
+          Toast.makeText(
+              context,
+              "Folder copied, but no Gradle Android project was found. Check build.gradle(.kts) and gradle/wrapper/gradle-wrapper.properties.",
+              Toast.LENGTH_LONG,
+          ).show()
+        }
+      } catch (error: Exception) {
+        log.error("Failed to import selected project folder", error)
+        Toast.makeText(
+            context,
+            getString(string.codeqiv_import_failed, error.localizedMessage ?: error.javaClass.simpleName),
+            Toast.LENGTH_LONG,
+        ).show()
+      }
+    }
+  }
+
+  /** Extract a ZIP archive safely, then open its Gradle project root. */
+  private fun importProjectZip(uri: Uri) {
+    val context = requireContext()
+    val destination = createImportDestination("ImportedProject")
+    Toast.makeText(context, getString(string.codeqiv_importing_project), Toast.LENGTH_SHORT).show()
+
+    viewLifecycleOwner.lifecycleScope.launch {
+      try {
+        withContext(Dispatchers.IO) {
+          CodeQivProjectImporter.importZip(context, uri, destination)
+        }
+        val projectRoot = findImportedProjectRoot(destination)
+        if (projectRoot != null) {
+          Toast.makeText(context, getString(string.codeqiv_import_complete), Toast.LENGTH_SHORT).show()
+          openProject(projectRoot)
+        } else {
+          Toast.makeText(
+              context,
+              "ZIP extracted, but no Gradle Android project was found. Check the archive contents.",
+              Toast.LENGTH_LONG,
+          ).show()
+        }
+      } catch (error: Exception) {
+        log.error("Failed to import selected ZIP project", error)
+        Toast.makeText(
+            context,
+            getString(string.codeqiv_import_failed, error.localizedMessage ?: error.javaClass.simpleName),
+            Toast.LENGTH_LONG,
+        ).show()
+      }
+    }
+  }
+
+  private fun createImportDestination(suggestedName: String): File {
+    val safeName = suggestedName.replace(Regex("[^A-Za-z0-9._ -]"), "_")
+        .trim()
+        .trim('.')
+        .ifBlank { "ImportedProject" }
+    var destination = File(Environment.PROJECTS_DIR, safeName)
+    if (destination.exists()) {
+      destination = File(Environment.PROJECTS_DIR, safeName + "_" + System.currentTimeMillis())
+    }
+    return destination
+  }
+
+  private fun findImportedProjectRoot(destination: File): File? {
+    if (isValidAndroidProject(destination)) return destination
+    val children = destination.listFiles()?.filter { it.isDirectory }.orEmpty()
+    if (children.size == 1 && isValidAndroidProject(children.single())) return children.single()
+    return children.firstOrNull { isValidAndroidProject(it) }
+  }
+
   private fun showProjectOptionsDialog(project: File, onActionComplete: () -> Unit) {
     val options = arrayOf("Backup project", "Delete project", "Rename")
 
