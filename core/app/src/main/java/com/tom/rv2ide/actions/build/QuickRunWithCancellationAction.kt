@@ -18,12 +18,16 @@
 package com.tom.rv2ide.actions.build
 
 import android.content.Context
+import android.view.MenuItem
+import android.view.View
 import android.graphics.ColorFilter
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import androidx.core.content.ContextCompat
 import com.tom.rv2ide.R.string
 import com.tom.rv2ide.actions.ActionData
+import com.tom.rv2ide.actions.ActionsRegistry
+import com.tom.rv2ide.actions.internal.DefaultActionsRegistry
 import com.tom.rv2ide.actions.BaseBuildAction
 import com.tom.rv2ide.actions.getContext
 import com.tom.rv2ide.actions.markInvisible
@@ -41,6 +45,7 @@ import com.tom.rv2ide.ui.InstallingDialog
 import com.tom.rv2ide.utils.ApkInstaller
 import com.tom.rv2ide.utils.InstallationResultHandler
 import com.tom.rv2ide.utils.IntentUtils
+import com.tom.rv2ide.utils.EditorToolbarActionView
 import com.tom.rv2ide.utils.flashError
 import com.tom.rv2ide.utils.resolveAttr
 import io.github.miyazkaori.silentinstaller.SilentInstaller
@@ -106,9 +111,24 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
   override fun createColorFilter(data: ActionData): ColorFilter? {
     return data.getContext()?.let {
       PorterDuffColorFilter(
-          it.resolveAttr(if (data.isBuildInProgress()) R.attr.colorError else R.attr.colorSuccess),
+          ContextCompat.getColor(it, com.tom.rv2ide.R.color.codeqiv_editor_accent),
           PorterDuff.Mode.SRC_ATOP,
       )
+    }
+  }
+
+  override fun getShowAsActionFlags(data: ActionData): Int =
+      MenuItem.SHOW_AS_ACTION_ALWAYS
+
+  override fun createActionView(data: ActionData): View? {
+    val context = data.getContext() ?: return null
+    return EditorToolbarActionView(context).apply {
+      setLabel("Run")
+      setIcon(icon, createColorFilter(data))
+      setOnClickListener {
+        (ActionsRegistry.getInstance() as? DefaultActionsRegistry)
+            ?.executeAction(this@QuickRunWithCancellationAction, data)
+      }
     }
   }
 

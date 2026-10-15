@@ -56,6 +56,7 @@ import com.tom.rv2ide.tasks.executeAsync
 import com.tom.rv2ide.ui.CodeEditorView
 import com.tom.rv2ide.utils.DialogUtils.newYesNoDialog
 import com.tom.rv2ide.utils.IntentUtils.openImage
+import com.tom.rv2ide.utils.EditorToolbarActionView
 import com.tom.rv2ide.utils.UniqueNameBuilder
 import com.tom.rv2ide.utils.flashSuccess
 import java.io.File
@@ -231,20 +232,18 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
               alpha = if (action.enabled) 255 else 76
             }
 
-        var showAsAction = action.getShowAsActionFlags(data)
-        if (showAsAction == -1) {
-          showAsAction =
-              if (action.icon != null) {
-                MenuItem.SHOW_AS_ACTION_IF_ROOM
-              } else {
-                MenuItem.SHOW_AS_ACTION_NEVER
-              }
-        }
+        (item.actionView as? EditorToolbarActionView)?.setIcon(
+            action.icon,
+            action.createColorFilter(data),
+        )
 
-        if (!action.enabled) {
-          showAsAction = MenuItem.SHOW_AS_ACTION_NEVER
-        }
-
+        val primaryMobileAction =
+            action.id == "ide.editor.build.quickRun" ||
+                action.id == "ide.editor.find" ||
+                action.id == "ide.editor.toolbar.ai"
+        val showAsAction =
+            if (primaryMobileAction) MenuItem.SHOW_AS_ACTION_ALWAYS
+            else MenuItem.SHOW_AS_ACTION_NEVER
         item.setShowAsAction(showAsAction)
 
         action.createActionView(data)?.let { item.actionView = it }

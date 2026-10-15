@@ -21,6 +21,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import androidx.core.graphics.Insets
+import androidx.recyclerview.widget.RecyclerView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.marginBottom
@@ -28,7 +29,9 @@ import androidx.core.view.marginTop
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updateMarginsRelative
 import androidx.core.view.updatePadding
+import com.tom.rv2ide.R
 import com.tom.rv2ide.databinding.FragmentEditorSidebarBinding
+import com.tom.rv2ide.utils.SidebarNavigationAdapter
 import com.tom.rv2ide.fragments.FragmentWithBinding
 import com.tom.rv2ide.utils.EditorSidebarActions
 
@@ -71,6 +74,21 @@ class EditorSidebarFragment :
     }
 
     EditorSidebarActions.setup(this)
+  }
+
+  /** Select a sidebar destination by action ID after the drawer has been opened. */
+  fun openAction(actionId: String) {
+    val recycler = binding.navigation.findViewById<RecyclerView>(R.id.navigation_recycler)
+    val adapter = recycler.adapter as? SidebarNavigationAdapter ?: return
+    val position =
+        (0 until adapter.itemCount).firstOrNull { adapter.getItem(it).id == actionId } ?: return
+    recycler.scrollToPosition(position)
+    recycler.post {
+      recycler.findViewHolderForAdapterPosition(position)
+          ?.itemView
+          ?.findViewById<View>(R.id.navigation_button)
+          ?.performClick()
+    }
   }
 
   /** Get the (nullable) binding object for this fragment. */
