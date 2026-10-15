@@ -80,8 +80,8 @@ class EditorSidebarFragment :
   fun openAction(actionId: String) {
     val recycler = binding.navigation.findViewById<RecyclerView>(R.id.navigation_recycler)
     val adapter = recycler.adapter as? SidebarNavigationAdapter ?: return
-    val position =
-        (0 until adapter.itemCount).firstOrNull { adapter.getItem(it).id == actionId } ?: return
+    val position = adapter.currentList.indexOfFirst { it.id == actionId }
+    if (position < 0) return
     recycler.scrollToPosition(position)
     recycler.post {
       recycler.findViewHolderForAdapterPosition(position)
