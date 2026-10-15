@@ -20,7 +20,6 @@ package com.tom.rv2ide.activities
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
-import android.widget.FrameLayout
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
@@ -57,21 +56,13 @@ class MainActivity : EdgeToEdgeIDEActivity() {
       object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
           viewModel.apply {
-
-            if (creatingProject.value == true) {
-              return@apply
+            if (creatingProject.value == true) return@apply
+            val newScreen = when (currentScreen.value) {
+              SCREEN_TEMPLATE_DETAILS -> SCREEN_TEMPLATE_LIST
+              SCREEN_TEMPLATE_LIST -> SCREEN_MAIN
+              else -> SCREEN_MAIN
             }
-
-            val newScreen =
-                when (currentScreen.value) {
-                  SCREEN_TEMPLATE_DETAILS -> SCREEN_TEMPLATE_LIST
-                  SCREEN_TEMPLATE_LIST -> SCREEN_MAIN
-                  else -> SCREEN_MAIN
-                }
-
-            if (currentScreen.value != newScreen) {
-              setScreen(newScreen)
-            }
+            if (currentScreen.value != newScreen) setScreen(newScreen)
           }
         }
       }
@@ -84,28 +75,22 @@ class MainActivity : EdgeToEdgeIDEActivity() {
     tomIDEUpdater = TomIDEUpdater(this)
     tomIDEUpdater.checkForUpdates()
 
-    openLastProject()
-
+    // CodeQiv requirement: always land on Home. Opening the previous project is
+    // an explicit user action from the Open Project list, never an app-start side effect.
     viewModel.currentScreen.observe(this) { screen ->
-      if (screen == -1) {
-        return@observe
-      }
-
+      if (screen == -1) return@observe
       onScreenChanged(screen)
       onBackPressedCallback.isEnabled = screen != SCREEN_MAIN
     }
-
     if (viewModel.currentScreen.value == -1 && viewModel.previousScreen == -1) {
       viewModel.setScreen(SCREEN_MAIN)
     } else {
-      onScreenChanged(viewModel.currentScreen.value)
+      viewModel.setScreen(SCREEN_MAIN)
     }
-    
     onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+
     val updater = KotlinLspUpdater(this)
     updater.checkForUpdates(LSPProperties.kotlinLspVersion)
-    
-            
   }
 
   override fun onApplySystemBarInsets(insets: Insets) {
@@ -118,35 +103,22 @@ class MainActivity : EdgeToEdgeIDEActivity() {
       val setAxisToX =
           (previous == SCREEN_TEMPLATE_LIST || previous == SCREEN_TEMPLATE_DETAILS) &&
               (screen == SCREEN_TEMPLATE_LIST || screen == SCREEN_TEMPLATE_DETAILS)
-
-      val axis =
-          if (setAxisToX) {
-            MaterialSharedAxis.X
-          } else {
-            MaterialSharedAxis.Y
-          }
-
+      val axis = if (setAxisToX) MaterialSharedAxis.X else MaterialSharedAxis.Y
       val isForward = (screen ?: 0) - previous == 1
-
       val transition = MaterialSharedAxis(axis, isForward)
       transition.doOnEnd {
         viewModel.isTransitionInProgress = false
         onBackPressedCallback.isEnabled = viewModel.currentScreen.value != SCREEN_MAIN
       }
-
       viewModel.isTransitionInProgress = true
       TransitionManager.beginDelayedTransition(binding.root, transition)
     }
-
-    val currentFragment =
-        when (screen) {
-          SCREEN_MAIN -> binding.main
-          SCREEN_TEMPLATE_LIST ->
-              com.tom.rv2ide.templates.AtcInterface().create(this)
-          SCREEN_TEMPLATE_DETAILS -> binding.templateDetails
-          else -> throw IllegalArgumentException("Invalid screen id: '$screen'")
-        }
-
+    val currentFragment = when (screen) {
+      SCREEN_MAIN -> binding.main
+      SCREEN_TEMPLATE_LIST -> com.tom.rv2ide.templates.AtcInterface().create(this)
+      SCREEN_TEMPLATE_DETAILS -> binding.templateDetails
+      else -> throw IllegalArgumentException("Invalid screen id: '$screen'")
+    }
     for (fragment in arrayOf(binding.main, binding.templateList, binding.templateDetails)) {
       fragment.isVisible = fragment == currentFragment
     }
@@ -155,50 +127,6 @@ class MainActivity : EdgeToEdgeIDEActivity() {
   override fun bindLayout(): View {
     _binding = ActivityMainBinding.inflate(layoutInflater)
     return binding.root
-  }
-
-  private fun openLastProject() {
-    binding.root.post { tryOpenLastProject() }
-  }
-
-  private fun tryOpenLastProject() {
-    if (!GeneralPreferences.autoOpenProjects) {
-      return
-    }
-
-    val openedProject = GeneralPreferences.lastOpenedProject
-    if (GeneralPreferences.NO_OPENED_PROJECT == openedProject) {
-      return
-    }
-
-    if (TextUtils.isEmpty(openedProject)) {
-      app
-      flashInfo(string.msg_opened_project_does_not_exist)
-      return
-    }
-
-    val project = File(openedProject)
-    if (!project.exists()) {
-      flashInfo(string.msg_opened_project_does_not_exist)
-      return
-    }
-
-    if (GeneralPreferences.confirmProjectOpen) {
-      askProjectOpenPermission(project)
-      return
-    }
-
-    openProject(project)
-  }
-
-  private fun askProjectOpenPermission(root: File) {
-    val builder = DialogUtils.newMaterialDialogBuilder(this)
-    builder.setTitle(string.title_confirm_open_project)
-    builder.setMessage(getString(string.msg_confirm_open_project, root.absolutePath))
-    builder.setCancelable(false)
-    builder.setPositiveButton(string.yes) { _, _ -> openProject(root) }
-    builder.setNegativeButton(string.no, null)
-    builder.show()
   }
 
   internal fun openProject(root: File) {
