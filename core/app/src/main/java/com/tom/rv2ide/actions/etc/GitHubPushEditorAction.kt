@@ -72,12 +72,12 @@ class GitHubPushEditorAction(context: Context, override val order: Int) : Editor
     }
     val repositoryInput = EditText(activity).apply {
       hint = "https://github.com/owner/repository.git"
-      singleLine = true
+      setSingleLine(true)
       setText("https://github.com/$username/")
     }
     val commitInput = EditText(activity).apply {
       hint = "Commit message"
-      singleLine = true
+      setSingleLine(true)
       setText("Update from CodeQiv")
     }
     layout.addView(repositoryInput, LinearLayout.LayoutParams(-1, -2))
