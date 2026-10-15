@@ -1,5 +1,10 @@
 name: Build Android Code Studio
 
+# Keep only the newest build for this PR/branch running.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: 
