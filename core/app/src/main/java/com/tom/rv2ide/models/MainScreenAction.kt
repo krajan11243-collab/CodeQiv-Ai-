@@ -45,6 +45,7 @@ constructor(
     const val ACTION_DOCS = 6
     const val ACTION_IMPORT_FOLDER = 7
     const val ACTION_IMPORT_ZIP = 8
+    const val ACTION_GITHUB_CONNECT = 9
 
     /** Home priority follows the CodeQiv product flow: open/import first. */
     @JvmStatic
@@ -55,6 +56,12 @@ constructor(
                 ACTION_OPEN_PROJECT,
                 R.string.msg_open_existing_project,
                 R.drawable.ic_folder,
+            )
+        val githubConnect =
+            MainScreenAction(
+                ACTION_GITHUB_CONNECT,
+                R.string.codeqiv_connect_github,
+                R.drawable.ic_github,
             )
         val importFolder =
             MainScreenAction(
@@ -82,6 +89,7 @@ constructor(
         Collections.addAll(
             this,
             openProject,
+            githubConnect,
             importFolder,
             importZip,
             cloneGitRepository,

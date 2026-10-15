@@ -57,6 +57,7 @@ import com.tom.rv2ide.utils.CodeQivProjectImporter
 import com.tom.rv2ide.utils.DialogUtils
 import com.tom.rv2ide.utils.Environment
 import com.tom.rv2ide.utils.GeneralFileUtils
+import com.tom.rv2ide.utils.GitHubAccountManager
 import com.tom.rv2ide.utils.flashError
 import com.tom.rv2ide.utils.flashSuccess
 import com.tom.rv2ide.viewmodel.MainViewModel
@@ -128,6 +129,7 @@ class MainFragment : BaseFragment() {
             when (action.id) {
               MainScreenAction.ACTION_CREATE_PROJECT -> showCreateProject()
               MainScreenAction.ACTION_OPEN_PROJECT -> showProjectsBottomSheet()
+              MainScreenAction.ACTION_GITHUB_CONNECT -> showGitHubConnectDialog()
               MainScreenAction.ACTION_IMPORT_FOLDER -> importFolderLauncher.launch(null)
               MainScreenAction.ACTION_IMPORT_ZIP ->
                   importZipLauncher.launch(arrayOf("application/zip", "application/x-zip-compressed", "application/octet-stream"))
@@ -166,6 +168,85 @@ class MainFragment : BaseFragment() {
     super.onDestroyView()
     binding = null
   }
+
+  /**
+   * Connects a GitHub account using a personal access token. GitHub validates the token
+   * before it is stored in AndroidX encrypted preferences.
+   */
+  private fun showGitHubConnectDialog() {
+    val context = requireContext()
+    val connectedUser = GitHubAccountManager.getConnectedAccount(context)
+    if (connectedUser != null) {
+      AlertDialog.Builder(context)
+          .setTitle("GitHub connected")
+          .setMessage("Connected as @$connectedUser. The access token is stored encrypted on this device.")
+          .setNegativeButton("Close", null)
+          .setPositiveButton("Disconnect") { _, _ ->
+            GitHubAccountManager.disconnect(context)
+            Toast.makeText(context, "GitHub account disconnected.", Toast.LENGTH_SHORT).show()
+          }
+          .show()
+      return
+    }
+
+    val inputLayout = TextInputLayout(context).apply {
+      hint = "GitHub personal access token"
+      boxBackgroundMode = TextInputLayout.BOX_BACKGROUND_OUTLINE
+      setPadding(dp(20), dp(8), dp(20), dp(4))
+    }
+    val tokenInput = TextInputEditText(inputLayout.context).apply {
+      inputType = android.text.InputType.TYPE_CLASS_TEXT or
+          android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+      singleLine = true
+      setTextIsSelectable(false)
+      hint = "github_pat_…"
+    }
+    inputLayout.addView(
+        tokenInput,
+        ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT),
+    )
+
+    val dialog = AlertDialog.Builder(context)
+        .setTitle("Connect GitHub")
+        .setMessage("Paste a GitHub personal access token. CodeQiv validates it with GitHub and stores it encrypted on this device.")
+        .setView(inputLayout)
+        .setNegativeButton("Cancel", null)
+        .setPositiveButton("Connect", null)
+        .create()
+
+    dialog.setOnShowListener {
+      dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+        val token = tokenInput.text?.toString()?.trim().orEmpty()
+        if (token.isBlank()) {
+          inputLayout.error = "Enter your GitHub token"
+          return@setOnClickListener
+        }
+        inputLayout.error = null
+        val button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+        button.isEnabled = false
+        button.text = "Checking…"
+        viewLifecycleOwner.lifecycleScope.launch {
+          try {
+            val username = withContext(Dispatchers.IO) {
+              GitHubAccountManager.connect(context, token)
+            }
+            if (isAdded) {
+              dialog.dismiss()
+              Toast.makeText(context, "GitHub connected as @$username", Toast.LENGTH_LONG).show()
+            }
+          } catch (error: Exception) {
+            inputLayout.error = error.message ?: "Could not connect to GitHub"
+            button.isEnabled = true
+            button.text = "Connect"
+          }
+        }
+      }
+    }
+    dialog.show()
+  }
+
+  private fun dp(value: Int): Int =
+      (value * resources.displayMetrics.density + 0.5f).toInt()
 
   private fun showProjectsBottomSheet() {
     val bottomSheet = BottomSheetDialog(requireContext())
